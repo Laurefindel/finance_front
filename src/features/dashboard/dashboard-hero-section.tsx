@@ -13,7 +13,7 @@ export function DashboardHeroSection() {
         запросы к backend выполняются через server functions.
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
-        <Button asChild>
+        <Button asChild className="bg-foreground text-background hover:bg-foreground/90">
           <Link to="/operations">Открыть операции</Link>
         </Button>
         <Button asChild variant="outline">
