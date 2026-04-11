@@ -19,7 +19,6 @@ const appLinks = [
   { to: '/currencies', label: 'Currencies' },
   { to: '/accounts', label: 'Accounts' },
   { to: '/operations', label: 'Operations' },
-  { to: '/async-replenish', label: 'Async' },
   { to: '/concurrency', label: 'Concurrency' },
   { to: '/about', label: 'About' },
 ] as const

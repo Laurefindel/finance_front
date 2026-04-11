@@ -14,7 +14,6 @@ import { Route as RolesRouteImport } from './routes/roles'
 import { Route as OperationsRouteImport } from './routes/operations'
 import { Route as CurrenciesRouteImport } from './routes/currencies'
 import { Route as ConcurrencyRouteImport } from './routes/concurrency'
-import { Route as AsyncReplenishRouteImport } from './routes/async-replenish'
 import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -44,11 +43,6 @@ const ConcurrencyRoute = ConcurrencyRouteImport.update({
   path: '/concurrency',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AsyncReplenishRoute = AsyncReplenishRouteImport.update({
-  id: '/async-replenish',
-  path: '/async-replenish',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AccountsRoute = AccountsRouteImport.update({
   id: '/accounts',
   path: '/accounts',
@@ -69,7 +63,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
-  '/async-replenish': typeof AsyncReplenishRoute
   '/concurrency': typeof ConcurrencyRoute
   '/currencies': typeof CurrenciesRoute
   '/operations': typeof OperationsRoute
@@ -80,7 +73,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
-  '/async-replenish': typeof AsyncReplenishRoute
   '/concurrency': typeof ConcurrencyRoute
   '/currencies': typeof CurrenciesRoute
   '/operations': typeof OperationsRoute
@@ -92,7 +84,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
-  '/async-replenish': typeof AsyncReplenishRoute
   '/concurrency': typeof ConcurrencyRoute
   '/currencies': typeof CurrenciesRoute
   '/operations': typeof OperationsRoute
@@ -105,7 +96,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/accounts'
-    | '/async-replenish'
     | '/concurrency'
     | '/currencies'
     | '/operations'
@@ -116,7 +106,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/accounts'
-    | '/async-replenish'
     | '/concurrency'
     | '/currencies'
     | '/operations'
@@ -127,7 +116,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/accounts'
-    | '/async-replenish'
     | '/concurrency'
     | '/currencies'
     | '/operations'
@@ -139,7 +127,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AccountsRoute: typeof AccountsRoute
-  AsyncReplenishRoute: typeof AsyncReplenishRoute
   ConcurrencyRoute: typeof ConcurrencyRoute
   CurrenciesRoute: typeof CurrenciesRoute
   OperationsRoute: typeof OperationsRoute
@@ -184,13 +171,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConcurrencyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/async-replenish': {
-      id: '/async-replenish'
-      path: '/async-replenish'
-      fullPath: '/async-replenish'
-      preLoaderRoute: typeof AsyncReplenishRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/accounts': {
       id: '/accounts'
       path: '/accounts'
@@ -219,7 +199,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AccountsRoute: AccountsRoute,
-  AsyncReplenishRoute: AsyncReplenishRoute,
   ConcurrencyRoute: ConcurrencyRoute,
   CurrenciesRoute: CurrenciesRoute,
   OperationsRoute: OperationsRoute,

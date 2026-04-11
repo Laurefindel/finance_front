@@ -1,12 +1,6 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useCallback, useMemo, useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { ColumnDef } from '@tanstack/react-table'
-import { toast } from 'sonner'
-import { Button } from '#/components/ui/button'
-import type {
-  FormActionModel,
-  TableViewModel,
-} from '#/features/shared/action-models'
+import type { FormActionModel } from '#/features/shared/action-models'
 import {
   createAccountFn,
   deleteAccountFn,
@@ -25,6 +19,11 @@ import {
   type ReplenishAccountFormState,
 } from './types'
 
+interface AccountsPageNotifications {
+  onSuccess?: (message: string) => void
+  onError?: (message: string) => void
+}
+
 function createDefaultFilters(): AccountsFiltersState {
   return { ...defaultAccountsFilters }
 }
@@ -37,8 +36,18 @@ function createDefaultReplenishForm(): ReplenishAccountFormState {
   return { ...defaultReplenishAccountForm }
 }
 
-export function useAccountsPageModel() {
+function getSortableAccountId(account: AccountResponse) {
+  return typeof account.id === 'number' ? account.id : Number.MAX_SAFE_INTEGER
+}
+
+function noop() {}
+
+export function useAccountsPageModel(
+  notifications: AccountsPageNotifications = {},
+) {
   const queryClient = useQueryClient()
+  const notifySuccess = notifications.onSuccess ?? noop
+  const notifyError = notifications.onError ?? noop
 
   const [filters, setFilters] = useState<AccountsFiltersState>(createDefaultFilters)
   const [createForm, setCreateForm] =
@@ -67,16 +76,26 @@ export function useAccountsPageModel() {
     queryFn: () => listAccountsFn({ data: normalizedFilters }),
   })
 
+  const rows = useMemo(() => {
+    if (!accountsQuery.data) {
+      return []
+    }
+
+    return [...accountsQuery.data].sort(
+      (left, right) => getSortableAccountId(left) - getSortableAccountId(right),
+    )
+  }, [accountsQuery.data])
+
   const createAccountMutation = useMutation({
     mutationFn: (payload: { userId: number; currencyId: number }) =>
       createAccountFn({ data: payload }),
     onSuccess: async () => {
-      toast.success('Счет создан')
+      notifySuccess('Счет создан')
       setCreateForm(createDefaultCreateForm())
       await queryClient.invalidateQueries({ queryKey: ['finance', 'accounts'] })
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error))
+      notifyError(getErrorMessage(error))
     },
   })
 
@@ -84,94 +103,30 @@ export function useAccountsPageModel() {
     mutationFn: (payload: { id: number; amount: number }) =>
       replenishAccountFn({ data: payload }),
     onSuccess: async () => {
-      toast.success('Баланс успешно пополнен')
+      notifySuccess('Баланс успешно пополнен')
       setReplenishForm(createDefaultReplenishForm())
       await queryClient.invalidateQueries({ queryKey: ['finance', 'accounts'] })
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error))
+      notifyError(getErrorMessage(error))
     },
   })
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteAccountFn({ data: { id } }),
     onSuccess: async () => {
-      toast.success('Счет удален')
+      notifySuccess('Счет удален')
       await queryClient.invalidateQueries({ queryKey: ['finance', 'accounts'] })
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error))
+      notifyError(getErrorMessage(error))
     },
   })
 
-  const columns = useMemo<Array<ColumnDef<AccountResponse>>>(
-    () => [
-      {
-        accessorKey: 'id',
-        header: 'ID',
-      },
-      {
-        accessorKey: 'balance',
-        header: 'Баланс',
-        cell: ({ row }) => {
-          const value = row.original.balance
-          return value === undefined ? '-' : Number(value).toFixed(2)
-        },
-      },
-      {
-        id: 'owner',
-        header: 'Владелец',
-        cell: ({ row }) => {
-          const user = row.original.user
-          if (!user) {
-            return '-'
-          }
-
-          return `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || '-'
-        },
-      },
-      {
-        id: 'currency',
-        header: 'Валюта',
-        cell: ({ row }) => row.original.currency?.code ?? '-',
-      },
-      {
-        id: 'incoming',
-        header: 'Входящие',
-        cell: ({ row }) => row.original.incomingOperations?.length ?? 0,
-      },
-      {
-        id: 'outcoming',
-        header: 'Исходящие',
-        cell: ({ row }) => row.original.outcomingOperations?.length ?? 0,
-      },
-      {
-        id: 'actions',
-        header: 'Действия',
-        cell: ({ row }) => {
-          const id = row.original.id
-
-          return (
-            <Button
-              variant="destructive"
-              size="sm"
-              disabled={!id || deleteMutation.isPending}
-              onClick={() => {
-                if (!id) {
-                  return
-                }
-
-                if (window.confirm(`Удалить счет #${id}?`)) {
-                  deleteMutation.mutate(id)
-                }
-              }}
-            >
-              Удалить
-            </Button>
-          )
-        },
-      },
-    ],
+  const onDelete = useCallback(
+    async (id: number) => {
+      await deleteMutation.mutateAsync(id)
+    },
     [deleteMutation],
   )
 
@@ -181,8 +136,13 @@ export function useAccountsPageModel() {
     const userId = Number(createForm.userId)
     const currencyId = Number(createForm.currencyId)
 
-    if (!Number.isFinite(userId) || !Number.isFinite(currencyId)) {
-      toast.error('Укажите корректные userId и currencyId')
+    if (
+      !Number.isInteger(userId) ||
+      userId <= 0 ||
+      !Number.isInteger(currencyId) ||
+      currencyId <= 0
+    ) {
+      notifyError('Укажите целочисленные userId и currencyId больше 0')
       return
     }
 
@@ -199,8 +159,8 @@ export function useAccountsPageModel() {
     const id = Number(replenishForm.id)
     const amount = Number(replenishForm.amount)
 
-    if (!Number.isFinite(id) || !Number.isFinite(amount)) {
-      toast.error('Укажите корректные id и amount')
+    if (!Number.isInteger(id) || id <= 0 || !Number.isFinite(amount) || amount < 0) {
+      notifyError('Укажите корректные id и amount')
       return
     }
 
@@ -225,12 +185,6 @@ export function useAccountsPageModel() {
     isPending: replenishMutation.isPending,
   }
 
-  const table: TableViewModel<AccountResponse> = {
-    columns,
-    rows: accountsQuery.data ?? [],
-    rowsErrorMessage: accountsQuery.error ? getErrorMessage(accountsQuery.error) : null,
-  }
-
   return {
     filters: {
       form: filters,
@@ -239,6 +193,11 @@ export function useAccountsPageModel() {
     },
     create,
     replenish,
-    table,
+    delete: {
+      onDelete,
+      isPending: deleteMutation.isPending,
+    },
+    rows,
+    rowsErrorMessage: accountsQuery.error ? getErrorMessage(accountsQuery.error) : null,
   }
 }

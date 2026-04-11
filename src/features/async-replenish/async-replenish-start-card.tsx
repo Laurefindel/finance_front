@@ -25,6 +25,10 @@ export function AsyncReplenishStartCard({
             <Label htmlFor="asyncAccountId">accountId</Label>
             <Input
               id="asyncAccountId"
+              type="number"
+              min="1"
+              step="1"
+              inputMode="numeric"
               value={value.accountId}
               onChange={(event) =>
                 onChange((prev) => ({ ...prev, accountId: event.target.value }))

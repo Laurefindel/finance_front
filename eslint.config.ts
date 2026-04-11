@@ -64,8 +64,75 @@ export default defineConfig(
       'react-hooks/incompatible-library': 'warn',
       'react-hooks/set-state-in-effect': 'warn',
       'react-hooks/set-state-in-render': 'error',
+      'no-alert': 'off',
       'react/prop-types': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
+    },
+  },
+  {
+    files: ['src/features/**/use-*-page-model.tsx'],
+    rules: {
+      'max-lines': [
+        'warn',
+        {
+          max: 220,
+          skipBlankLines: true,
+          skipComments: true,
+        },
+      ],
+      'max-lines-per-function': [
+        'warn',
+        {
+          max: 170,
+          skipBlankLines: true,
+          skipComments: true,
+          IIFEs: true,
+        },
+      ],
+      complexity: ['warn', { max: 15 }],
+      'no-restricted-imports': [
+        'warn',
+        {
+          patterns: [
+            {
+              group: ['#/components/**'],
+              message:
+                'Не импортируйте UI-компоненты напрямую в page-model; вынесите UI в card/route слой.',
+            },
+          ],
+          paths: [
+            {
+              name: 'sonner',
+              importNames: ['toast'],
+              message:
+                'Избегайте прямых toast-вызовов в page-model; используйте слой presentation/effects.',
+            },
+          ],
+        },
+      ],
+      'no-restricted-syntax': [
+        'warn',
+        {
+          selector: "CallExpression[callee.object.name='window'][callee.property.name='confirm']",
+          message:
+            'window.confirm в page-model смешивает бизнес-логику и UI. Перенесите подтверждение в слой view.',
+        },
+        {
+          selector: "CallExpression[callee.name='confirm']",
+          message:
+            'confirm в page-model смешивает бизнес-логику и UI. Перенесите подтверждение в слой view.',
+        },
+        {
+          selector: "CallExpression[callee.object.name='toast']",
+          message:
+            'toast в page-model указывает на смешение доменной логики и UI-эффектов. Вынесите в presentation слой.',
+        },
+        {
+          selector: 'JSXElement',
+          message:
+            'JSX в page-model является антипаттерном. Верните JSX в UI-компонент/route, оставьте модель без представления.',
+        },
+      ],
     },
   },
 )

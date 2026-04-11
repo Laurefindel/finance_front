@@ -1,5 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useMemo } from 'react'
+import { toast } from 'sonner'
 import { CurrenciesCreateCard } from '#/features/currencies/currencies-create-card'
+import { createCurrenciesTableColumns } from '#/features/currencies/currencies-table-columns'
 import { CurrenciesTableCard } from '#/features/currencies/currencies-table-card'
 import { CurrenciesUpdateCard } from '#/features/currencies/currencies-update-card'
 import { useCurrenciesPageModel } from '#/features/currencies/use-currencies-page-model'
@@ -10,7 +13,19 @@ export const Route = createFileRoute('/currencies')({
 })
 
 function CurrenciesPage() {
-  const model = useCurrenciesPageModel()
+  const model = useCurrenciesPageModel({
+    onSuccess: (message) => toast.success(message),
+    onError: (message) => toast.error(message),
+  })
+
+  const columns = useMemo(
+    () =>
+      createCurrenciesTableColumns({
+        isDeletePending: model.remove.isPending,
+        onDelete: model.remove.onDelete,
+      }),
+    [model.remove.isPending, model.remove.onDelete],
+  )
 
   return (
     <main className="page-wrap space-y-6 px-4 py-8">
@@ -37,7 +52,7 @@ function CurrenciesPage() {
       </div>
 
       <CurrenciesTableCard
-        columns={model.table.columns}
+        columns={columns}
         data={model.table.rows}
         errorMessage={model.table.rowsErrorMessage}
       />

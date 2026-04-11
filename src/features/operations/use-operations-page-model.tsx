@@ -1,29 +1,17 @@
 import { useMemo, useState, type FormEvent } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { ColumnDef } from '@tanstack/react-table'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
-import { toast } from 'sonner'
-import { Button } from '#/components/ui/button'
 import type {
   FiltersActionModel,
   FormActionModel,
   PaginationActionModel,
-  TableViewModel,
   TriggerActionModel,
 } from '#/features/shared/action-models'
-import {
-  createBulkOperationsFn,
-  createBulkOperationsNoTxFn,
-  createOperationFn,
-  deleteOperationFn,
-  searchOperationsFn,
-} from '#/lib/finance/finance.functions'
+import { searchOperationsFn } from '#/lib/finance/finance.functions'
 import { getErrorMessage } from '#/lib/finance/error-utils'
 import { financeQueryKeys } from '#/lib/finance/query-keys'
 import {
   FinancialOperationRequestSchema,
-  type FinancialOperationRequest,
-  type FinancialOperationResponse,
 } from '#/lib/finance/schemas'
 import {
   defaultBulkOperationsPayload,
@@ -32,6 +20,10 @@ import {
   type OperationCreateFormState,
   type OperationFilterState,
 } from './types'
+import {
+  type OperationsPageModelNotifications,
+  useOperationsPageModelMutations,
+} from './operations-page-model-mutations'
 
 function createDefaultFilters(): OperationFilterState {
   return { ...defaultOperationFilters }
@@ -50,7 +42,14 @@ function parseOptionalNumber(value: string) {
   return Number.isFinite(parsed) ? parsed : undefined
 }
 
-export function useOperationsPageModel() {
+interface DeleteOperationAction {
+  onDelete: (id: number) => Promise<void>
+  isPending: boolean
+}
+
+export function useOperationsPageModel(
+  notifications?: OperationsPageModelNotifications,
+) {
   const queryClient = useQueryClient()
 
   const [filtersForm, setFiltersForm] =
@@ -63,6 +62,19 @@ export function useOperationsPageModel() {
     useState<OperationCreateFormState>(createDefaultOperationForm)
 
   const [bulkPayload, setBulkPayload] = useState(defaultBulkOperationsPayload)
+
+  const {
+    createMutation,
+    deleteMutation,
+    bulkMutation,
+    bulkNoTxMutation,
+  } = useOperationsPageModelMutations({
+    queryClient,
+    notifications,
+    onCreateSuccess: () => {
+      setCreateForm(createDefaultOperationForm())
+    },
+  })
 
   const normalizedFilters = useMemo(() => {
     const sizeRaw = Number(activeFilters.size)
@@ -100,116 +112,6 @@ export function useOperationsPageModel() {
       }),
   })
 
-  const createMutation = useMutation({
-    mutationFn: (payload: FinancialOperationRequest) =>
-      createOperationFn({ data: payload }),
-    onSuccess: async () => {
-      toast.success('Операция создана')
-      setCreateForm(createDefaultOperationForm())
-      await queryClient.invalidateQueries({ queryKey: ['finance', 'operations'] })
-      await queryClient.invalidateQueries({ queryKey: ['finance', 'accounts'] })
-    },
-    onError: (error) => {
-      toast.error(getErrorMessage(error))
-    },
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteOperationFn({ data: { id } }),
-    onSuccess: async () => {
-      toast.success('Операция удалена')
-      await queryClient.invalidateQueries({ queryKey: ['finance', 'operations'] })
-      await queryClient.invalidateQueries({ queryKey: ['finance', 'accounts'] })
-    },
-    onError: (error) => {
-      toast.error(getErrorMessage(error))
-    },
-  })
-
-  const bulkMutation = useMutation({
-    mutationFn: (payload: FinancialOperationRequest[]) =>
-      createBulkOperationsFn({ data: payload }),
-    onSuccess: async () => {
-      toast.success('Bulk операции (transactional) созданы')
-      await queryClient.invalidateQueries({ queryKey: ['finance', 'operations'] })
-      await queryClient.invalidateQueries({ queryKey: ['finance', 'accounts'] })
-    },
-    onError: (error) => {
-      toast.error(getErrorMessage(error))
-    },
-  })
-
-  const bulkNoTxMutation = useMutation({
-    mutationFn: (payload: FinancialOperationRequest[]) =>
-      createBulkOperationsNoTxFn({ data: payload }),
-    onSuccess: async () => {
-      toast.success('Bulk операции (non-transactional) созданы')
-      await queryClient.invalidateQueries({ queryKey: ['finance', 'operations'] })
-      await queryClient.invalidateQueries({ queryKey: ['finance', 'accounts'] })
-    },
-    onError: (error) => {
-      toast.error(getErrorMessage(error))
-    },
-  })
-
-  const columns = useMemo<Array<ColumnDef<FinancialOperationResponse>>>(
-    () => [
-      {
-        accessorKey: 'id',
-        header: 'ID',
-      },
-      {
-        accessorKey: 'senderAccountId',
-        header: 'Отправитель',
-      },
-      {
-        accessorKey: 'receiverAccountId',
-        header: 'Получатель',
-      },
-      {
-        accessorKey: 'amount',
-        header: 'Сумма',
-      },
-      {
-        accessorKey: 'currencyCode',
-        header: 'Валюта',
-        cell: ({ row }) => row.original.currencyCode ?? '-',
-      },
-      {
-        accessorKey: 'description',
-        header: 'Описание',
-        cell: ({ row }) => row.original.description ?? '-',
-      },
-      {
-        id: 'actions',
-        header: 'Действия',
-        cell: ({ row }) => {
-          const id = row.original.id
-
-          return (
-            <Button
-              variant="destructive"
-              size="sm"
-              disabled={!id || deleteMutation.isPending}
-              onClick={() => {
-                if (!id) {
-                  return
-                }
-
-                if (window.confirm(`Удалить операцию #${id}?`)) {
-                  deleteMutation.mutate(id)
-                }
-              }}
-            >
-              Удалить
-            </Button>
-          )
-        },
-      },
-    ],
-    [deleteMutation],
-  )
-
   const onFilterSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setActiveFilters(filtersForm)
@@ -235,12 +137,12 @@ export function useOperationsPageModel() {
       !Number.isFinite(receiverAccountId) ||
       receiverAccountId <= 0
     ) {
-      toast.error('Укажите корректные senderAccountId и receiverAccountId')
+      notifications?.onError?.('Укажите корректные senderAccountId и receiverAccountId')
       return
     }
 
     if (!Number.isFinite(amount) || amount < 0) {
-      toast.error('Сумма операции должна быть больше либо равна 0')
+      notifications?.onError?.('Сумма операции должна быть больше либо равна 0')
       return
     }
 
@@ -267,7 +169,15 @@ export function useOperationsPageModel() {
         await bulkNoTxMutation.mutateAsync(payload)
       }
     } catch (error) {
-      toast.error(getErrorMessage(error))
+      notifications?.onError?.(getErrorMessage(error))
+    }
+  }
+
+  const onDelete = async (id: number) => {
+    try {
+      await deleteMutation.mutateAsync(id)
+    } catch {
+      // onError already reports the issue.
     }
   }
 
@@ -307,13 +217,14 @@ export function useOperationsPageModel() {
     onNext: () => setPage((prev) => prev + 1),
   }
 
-  const table: TableViewModel<FinancialOperationResponse> & {
-    pagination: PaginationActionModel
-  } = {
-    columns,
-    rows: operationsQuery.data?.content ?? [],
-    rowsErrorMessage: operationsQuery.error ? getErrorMessage(operationsQuery.error) : null,
-    pagination,
+  const rows = operationsQuery.data?.content ?? []
+  const rowsErrorMessage = operationsQuery.error
+    ? getErrorMessage(operationsQuery.error)
+    : null
+
+  const remove: DeleteOperationAction = {
+    onDelete,
+    isPending: deleteMutation.isPending,
   }
 
   return {
@@ -325,6 +236,11 @@ export function useOperationsPageModel() {
       transactional,
       nonTransactional,
     },
-    table,
+    table: {
+      rows,
+      rowsErrorMessage,
+      pagination,
+    },
+    remove,
   }
 }

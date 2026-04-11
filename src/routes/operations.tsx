@@ -1,7 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useMemo } from 'react'
+import { toast } from 'sonner'
 import { OperationsBulkCard } from '#/features/operations/operations-bulk-card'
 import { OperationsCreateCard } from '#/features/operations/operations-create-card'
 import { OperationsFiltersCard } from '#/features/operations/operations-filters-card'
+import { createOperationsTableColumns } from '#/features/operations/operations-table-columns'
 import { OperationsTableCard } from '#/features/operations/operations-table-card'
 import { useOperationsPageModel } from '#/features/operations/use-operations-page-model'
 import { PageHeaderSection } from '#/features/shared/page-header-section'
@@ -11,7 +14,19 @@ export const Route = createFileRoute('/operations')({
 })
 
 function OperationsPage() {
-  const model = useOperationsPageModel()
+  const model = useOperationsPageModel({
+    onSuccess: (message) => toast.success(message),
+    onError: (message) => toast.error(message),
+  })
+
+  const columns = useMemo(
+    () =>
+      createOperationsTableColumns({
+        isDeletePending: model.remove.isPending,
+        onDelete: model.remove.onDelete,
+      }),
+    [model.remove.isPending, model.remove.onDelete],
+  )
 
   return (
     <main className="page-wrap space-y-6 px-4 py-8">
@@ -45,7 +60,7 @@ function OperationsPage() {
       />
 
       <OperationsTableCard
-        columns={model.table.columns}
+        columns={columns}
         data={model.table.rows}
         errorMessage={model.table.rowsErrorMessage}
         currentPage={model.table.pagination.currentPage}

@@ -17,7 +17,7 @@ export function DashboardHeroSection() {
           <Link to="/operations">Открыть операции</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link to="/async-replenish">Async Replenish</Link>
+          <Link to="/accounts">Пополнение счетов</Link>
         </Button>
       </div>
     </section>

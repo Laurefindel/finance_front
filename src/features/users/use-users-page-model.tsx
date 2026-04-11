@@ -1,12 +1,7 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import type { ColumnDef } from '@tanstack/react-table'
-import { toast } from 'sonner'
-import { Badge } from '#/components/ui/badge'
-import { Button } from '#/components/ui/button'
 import type {
   FormActionModel,
-  TableViewModel,
 } from '#/features/shared/action-models'
 import {
   createUserFn,
@@ -30,7 +25,19 @@ function normalizeUser(user: UserResponse): UserResponse {
   }
 }
 
-export function useUsersPageModel() {
+interface UsersPageModelNotifications {
+  onSuccess?: (message: string) => void
+  onError?: (message: string) => void
+}
+
+interface DeleteUserAction {
+  onDelete: (id: number) => Promise<void>
+  isPending: boolean
+}
+
+export function useUsersPageModel(
+  notifications?: UsersPageModelNotifications,
+) {
   const queryClient = useQueryClient()
 
   const [form, setForm] = useState<UserFormState>(createDefaultUserForm)
@@ -43,7 +50,7 @@ export function useUsersPageModel() {
   const createUserMutation = useMutation({
     mutationFn: (payload: UserRequest) => createUserFn({ data: payload }),
     onSuccess: (createdUser) => {
-      toast.success('Пользователь создан')
+      notifications?.onSuccess?.('Пользователь создан')
       setForm(createDefaultUserForm())
 
       queryClient.setQueryData<UserResponse[]>(
@@ -65,14 +72,14 @@ export function useUsersPageModel() {
       )
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error))
+      notifications?.onError?.(getErrorMessage(error))
     },
   })
 
   const deleteUserMutation = useMutation({
     mutationFn: (id: number) => deleteUserFn({ data: { id } }),
     onSuccess: (_, deletedId) => {
-      toast.success('Пользователь удален')
+      notifications?.onSuccess?.('Пользователь удален')
 
       queryClient.setQueryData<UserResponse[]>(
         financeQueryKeys.users,
@@ -80,69 +87,9 @@ export function useUsersPageModel() {
       )
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error))
+      notifications?.onError?.(getErrorMessage(error))
     },
   })
-
-  const columns = useMemo<Array<ColumnDef<UserResponse>>>(
-    () => [
-      {
-        accessorKey: 'id',
-        header: 'ID',
-      },
-      {
-        accessorKey: 'firstName',
-        header: 'Имя',
-      },
-      {
-        accessorKey: 'lastName',
-        header: 'Фамилия',
-      },
-      {
-        accessorKey: 'email',
-        header: 'Email',
-      },
-      {
-        accessorKey: 'status',
-        header: 'Статус',
-        cell: ({ row }) => (
-          <Badge variant="secondary">{row.original.status ?? 'N/A'}</Badge>
-        ),
-      },
-      {
-        id: 'accounts',
-        header: 'Счета',
-        cell: ({ row }) => row.original.accountsIds?.length ?? 0,
-      },
-      {
-        id: 'actions',
-        header: 'Действия',
-        cell: ({ row }) => {
-          const id = row.original.id
-
-          return (
-            <Button
-              variant="destructive"
-              size="sm"
-              disabled={!id || deleteUserMutation.isPending}
-              onClick={() => {
-                if (!id) {
-                  return
-                }
-
-                if (window.confirm(`Удалить пользователя #${id}?`)) {
-                  deleteUserMutation.mutate(id)
-                }
-              }}
-            >
-              Удалить
-            </Button>
-          )
-        },
-      },
-    ],
-    [deleteUserMutation],
-  )
 
   const onApply = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -159,6 +106,14 @@ export function useUsersPageModel() {
     }
   }
 
+  const onDelete = async (id: number) => {
+    try {
+      await deleteUserMutation.mutateAsync(id)
+    } catch {
+      // onError already reports the issue.
+    }
+  }
+
   const rows = (usersQuery.data ?? []).map(normalizeUser)
   const rowsErrorMessage = usersQuery.error ? getErrorMessage(usersQuery.error) : null
   const hasRows = rows.length > 0
@@ -170,22 +125,21 @@ export function useUsersPageModel() {
     isPending: createUserMutation.isPending,
   }
 
-  const table: TableViewModel<UserResponse> = {
-    columns,
-    rows,
-    rowsErrorMessage,
+  const remove: DeleteUserAction = {
+    onDelete,
+    isPending: deleteUserMutation.isPending,
   }
 
   return {
     form: create.form,
     setForm: create.setForm,
     onApply: create.onApply,
-    columns: table.columns,
-    rows: table.rows,
-    rowsErrorMessage: table.rowsErrorMessage,
+    rows,
+    rowsErrorMessage,
     isSubmitPending: create.isPending,
     isInitialLoading: usersQuery.isLoading && !hasRows,
     isFatalError: Boolean(usersQuery.error) && !hasRows,
     hasRefreshError: Boolean(usersQuery.error) && hasRows,
+    remove,
   }
 }

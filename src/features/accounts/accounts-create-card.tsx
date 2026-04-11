@@ -24,6 +24,10 @@ export function AccountsCreateCard({
             <Label htmlFor="accountUserId">userId</Label>
             <Input
               id="accountUserId"
+              type="number"
+              min="1"
+              step="1"
+              inputMode="numeric"
               value={value.userId}
               onChange={(event) =>
                 onChange((prev) => ({ ...prev, userId: event.target.value }))
@@ -35,6 +39,10 @@ export function AccountsCreateCard({
             <Label htmlFor="accountCurrencyId">currencyId</Label>
             <Input
               id="accountCurrencyId"
+              type="number"
+              min="1"
+              step="1"
+              inputMode="numeric"
               value={value.currencyId}
               onChange={(event) =>
                 onChange((prev) => ({ ...prev, currencyId: event.target.value }))
