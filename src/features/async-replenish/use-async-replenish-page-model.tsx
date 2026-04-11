@@ -6,8 +6,8 @@ import {
   getAsyncStatusFn,
   startAsyncReplenishFn,
 } from '#/lib/finance/finance.functions'
-import { getErrorMessage } from '#/lib/finance/error-utils'
-import { financeQueryKeys } from '#/lib/finance/query-keys'
+import { getErrorMessage } from '#/lib/finance/errors/error-message'
+import { financeQueryKeys } from '#/lib/finance/queries/query-keys'
 import {
   defaultAsyncReplenishForm,
   type AsyncReplenishFormState,

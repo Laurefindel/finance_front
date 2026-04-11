@@ -6,7 +6,7 @@ import {
   listUsersFn,
   searchOperationsFn,
 } from '#/lib/finance/finance.functions'
-import { financeQueryKeys } from '#/lib/finance/query-keys'
+import { financeQueryKeys } from '#/lib/finance/queries/query-keys'
 import type { DashboardStatCard } from './types'
 
 export function useDashboardPageModel() {

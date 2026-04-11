@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import type { FormActionModel } from '#/features/shared/action-models'
 import { runRaceDemoFn } from '#/lib/finance/finance.functions'
-import { getErrorMessage } from '#/lib/finance/error-utils'
+import { getErrorMessage } from '#/lib/finance/errors/error-message'
 import {
   concurrencyLimits,
   defaultConcurrencyForm,

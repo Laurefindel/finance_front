@@ -1,11 +1,1 @@
-export function getErrorMessage(error: unknown) {
-  if (error instanceof Error) {
-    return error.message
-  }
-
-  if (typeof error === 'string') {
-    return error
-  }
-
-  return 'Произошла ошибка при выполнении запроса'
-}
+export { getErrorMessage } from './errors/error-message'

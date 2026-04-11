@@ -5,7 +5,7 @@ import {
   createOperationFn,
   deleteOperationFn,
 } from '#/lib/finance/finance.functions'
-import { getErrorMessage } from '#/lib/finance/error-utils'
+import { getErrorMessage } from '#/lib/finance/errors/error-message'
 import type { FinancialOperationRequest } from '#/lib/finance/schemas'
 
 export interface OperationsPageModelNotifications {
