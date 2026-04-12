@@ -15,7 +15,10 @@ export const FinancialOperationResponseSchema = z.object({
   id: z.number().int().optional(),
   senderAccountId: z.number().int().optional(),
   receiverAccountId: z.number().int().optional(),
-  description: z.string().optional(),
+  description: z
+    .string()
+    .nullish()
+    .transform((value) => value ?? undefined),
   amount: z.number().optional(),
   currencyCode: z.string().optional(),
 })
