@@ -11,6 +11,14 @@ const idSchema = z.object({
   id: z.number().int().positive(),
 })
 
+const currencyCodeSchema = z.object({
+  code: z.string().trim().length(3),
+})
+
+const currencyNameSchema = z.object({
+  name: z.string().trim().min(1),
+})
+
 const updateCurrencyInputSchema = z.object({
   id: z.number().int().positive(),
   payload: CurrencyRequestSchema,
@@ -45,6 +53,32 @@ export const updateCurrencyFn = createServerFn({ method: 'POST' })
       method: 'PATCH',
       body: data.payload,
       schema: CurrencyResponseSchema,
+    })
+  })
+
+export const getCurrencyByCodeFn = createServerFn({ method: 'GET' })
+  .inputValidator(currencyCodeSchema)
+  .handler(async ({ data }): Promise<CurrencyResponse> => {
+    return financeRequest({
+      path: '/currencies/by-code',
+      method: 'GET',
+      query: {
+        code: data.code,
+      },
+      schema: CurrencyResponseSchema,
+    })
+  })
+
+export const listCurrenciesByNameFn = createServerFn({ method: 'GET' })
+  .inputValidator(currencyNameSchema)
+  .handler(async ({ data }): Promise<CurrencyResponse[]> => {
+    return financeRequest({
+      path: '/currencies/by-name',
+      method: 'GET',
+      query: {
+        name: data.name,
+      },
+      schema: z.array(CurrencyResponseSchema),
     })
   })
 

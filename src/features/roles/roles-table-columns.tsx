@@ -4,7 +4,7 @@ import type { Role } from '#/lib/finance/schemas'
 
 interface CreateRolesTableColumnsOptions {
   isDeletePending: boolean
-  onDelete: (id: number) => Promise<void>
+  onDelete: (name: string) => Promise<void>
 }
 
 export function createRolesTableColumns({
@@ -17,31 +17,26 @@ export function createRolesTableColumns({
       header: 'Название роли',
     },
     {
-      accessorKey: 'id',
-      header: 'ID',
-      cell: ({ row }) => row.original.id ?? '-',
-    },
-    {
       id: 'actions',
       header: 'Действия',
       cell: ({ row }) => {
-        const id = row.original.id
+        const name = row.original.name?.trim()
 
         return (
           <ConfirmDialogButton
             triggerLabel="Удалить"
-            title={`Удалить роль #${id ?? '?'}`}
+            title="Удалить роль?"
             description="Роль будет удалена из справочника. Проверьте, что она не назначена критичным пользователям."
             confirmLabel="Удалить"
             triggerVariant="outline"
-            disabled={!id || isDeletePending}
+            disabled={!name || isDeletePending}
             isPending={isDeletePending}
             onConfirm={async () => {
-              if (!id) {
+              if (!name) {
                 return
               }
 
-              await onDelete(id)
+              await onDelete(name)
             }}
           />
         )

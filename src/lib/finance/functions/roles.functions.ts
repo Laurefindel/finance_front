@@ -1,13 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { financeRequest } from '../finance.server'
-import {
-  RoleSchema,
-  type Role,
-} from '../schemas'
+import { RoleSchema, type Role } from '../schemas'
 
-const idSchema = z.object({
-  id: z.number().int().positive(),
+const nameSchema = z.object({
+  name: z.string().trim().min(1),
 })
 
 export const listRolesFn = createServerFn({ method: 'GET' }).handler(
@@ -31,11 +28,37 @@ export const createRoleFn = createServerFn({ method: 'POST' })
     })
   })
 
+export const getRoleByNameFn = createServerFn({ method: 'GET' })
+  .inputValidator(nameSchema)
+  .handler(async ({ data }): Promise<Role> => {
+    return financeRequest({
+      path: '/roles/by-name',
+      method: 'GET',
+      query: {
+        name: data.name,
+      },
+      schema: RoleSchema,
+    })
+  })
+
 export const deleteRoleFn = createServerFn({ method: 'POST' })
-  .inputValidator(idSchema)
+  .inputValidator(nameSchema)
   .handler(async ({ data }): Promise<{ success: true }> => {
+    const role = await financeRequest({
+      path: '/roles/by-name',
+      method: 'GET',
+      query: {
+        name: data.name,
+      },
+      schema: RoleSchema,
+    })
+
+    if (!role.id) {
+      throw new Error('Не удалось определить ID роли')
+    }
+
     await financeRequest({
-      path: `/roles/${data.id}`,
+      path: `/roles/${role.id}`,
       method: 'DELETE',
     })
 

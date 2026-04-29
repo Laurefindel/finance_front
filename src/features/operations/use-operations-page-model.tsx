@@ -181,9 +181,7 @@ export function useOperationsPageModel(
       !Number.isFinite(receiverAccountId) ||
       receiverAccountId <= 0
     ) {
-      notifications?.onError?.(
-        'Укажите корректные идентификаторы счета отправителя и получателя',
-      )
+      notifications?.onError?.('Выберите корректные счета отправителя и получателя')
       return
     }
 
@@ -294,6 +292,10 @@ export function useOperationsPageModel(
   return {
     filters,
     create,
+    lookups: {
+      accounts: accountsQuery.data ?? [],
+      users: usersQuery.data ?? [],
+    },
     bulk: {
       payload: bulkPayload,
       setPayload: setBulkPayload,

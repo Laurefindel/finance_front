@@ -76,7 +76,7 @@ export function UsersUpdateDialogButton({
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Изменить пользователя #{id ?? '?'}</DialogTitle>
+          <DialogTitle>Изменить пользователя</DialogTitle>
         </DialogHeader>
 
         <form className="grid gap-4 md:grid-cols-2" onSubmit={onSubmit}>

@@ -14,7 +14,7 @@ export function AsyncReplenishStatusCard({
   status,
   message,
   statusTone,
-}: AsyncReplenishStatusCardProps) {
+}: Readonly<AsyncReplenishStatusCardProps>) {
   return (
     <Card>
       <CardHeader>
@@ -23,10 +23,6 @@ export function AsyncReplenishStatusCard({
       <CardContent className="space-y-3">
         {taskId ? (
           <>
-            <p className="text-sm text-muted-foreground">
-              ID задачи:{' '}
-              <span className="font-medium text-foreground">{taskId}</span>
-            </p>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Статус:</span>
               <Badge variant={statusTone}>{status ?? 'PENDING'}</Badge>

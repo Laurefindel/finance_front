@@ -63,6 +63,7 @@ function OperationsPage() {
               onChange={model.create.setForm}
               onApply={model.create.onApply}
               isPending={model.create.isPending}
+              accounts={model.lookups.accounts}
             />
           </DialogContent>
         </Dialog>
@@ -92,6 +93,7 @@ function OperationsPage() {
         onChange={model.filters.setForm}
         onApply={model.filters.onApply}
         onReset={model.filters.onReset}
+        users={model.lookups.users}
       />
 
       <OperationsTableCard

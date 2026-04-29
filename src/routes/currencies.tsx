@@ -74,6 +74,7 @@ function CurrenciesPage() {
               onChange={model.update.setForm}
               onApply={model.update.onApply}
               isPending={model.update.isPending}
+              currencies={model.table.rows}
             />
           </DialogContent>
         </Dialog>

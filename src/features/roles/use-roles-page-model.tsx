@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type SyntheticEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type {
   FormActionModel,
@@ -24,7 +24,7 @@ interface RolesPageModelNotifications {
 }
 
 interface DeleteRoleAction {
-  onDelete: (id: number) => Promise<void>
+  onDelete: (name: string) => Promise<void>
   isPending: boolean
 }
 
@@ -52,7 +52,7 @@ export function useRolesPageModel(
   })
 
   const deleteRoleMutation = useMutation({
-    mutationFn: (id: number) => deleteRoleFn({ data: { id } }),
+    mutationFn: (name: string) => deleteRoleFn({ data: { name } }),
     onSuccess: async () => {
       notifications?.onSuccess?.('Роль удалена')
       await queryClient.invalidateQueries({ queryKey: financeQueryKeys.roles })
@@ -62,7 +62,7 @@ export function useRolesPageModel(
     },
   })
 
-  const onApply = async (event: FormEvent<HTMLFormElement>) => {
+  const onApply = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     try {
@@ -72,9 +72,9 @@ export function useRolesPageModel(
     }
   }
 
-  const onDelete = async (id: number) => {
+  const onDelete = async (name: string) => {
     try {
-      await deleteRoleMutation.mutateAsync(id)
+      await deleteRoleMutation.mutateAsync(name)
     } catch {
       // onError already reports the issue.
     }

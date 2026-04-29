@@ -1,10 +1,12 @@
-import { useCallback, useMemo, useState, type FormEvent } from 'react'
+import { useCallback, useMemo, useState, type SyntheticEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { FormActionModel } from '#/features/shared/action-models'
 import {
   createAccountFn,
   deleteAccountFn,
   listAccountsFn,
+  listCurrenciesFn,
+  listUsersFn,
   replenishAccountFn,
 } from '#/lib/finance/finance.functions'
 import { getErrorMessage } from '#/lib/finance/errors/error-message'
@@ -76,6 +78,21 @@ export function useAccountsPageModel(
     queryFn: () => listAccountsFn({ data: normalizedFilters }),
   })
 
+  const accountsLookupQuery = useQuery({
+    queryKey: financeQueryKeys.accounts({}),
+    queryFn: () => listAccountsFn({ data: {} }),
+  })
+
+  const usersQuery = useQuery({
+    queryKey: financeQueryKeys.users,
+    queryFn: () => listUsersFn(),
+  })
+
+  const currenciesQuery = useQuery({
+    queryKey: financeQueryKeys.currencies,
+    queryFn: () => listCurrenciesFn(),
+  })
+
   const rows = useMemo(() => {
     if (!accountsQuery.data) {
       return []
@@ -130,7 +147,7 @@ export function useAccountsPageModel(
     [deleteMutation],
   )
 
-  const onCreateSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const onCreateSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     const userId = Number(createForm.userId)
@@ -142,7 +159,7 @@ export function useAccountsPageModel(
       !Number.isInteger(currencyId) ||
       currencyId <= 0
     ) {
-      notifyError('Укажите целочисленные userId и currencyId больше 0')
+      notifyError('Выберите пользователя и валюту')
       return
     }
 
@@ -153,14 +170,14 @@ export function useAccountsPageModel(
     }
   }
 
-  const onReplenishSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const onReplenishSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     const id = Number(replenishForm.id)
     const amount = Number(replenishForm.amount)
 
     if (!Number.isInteger(id) || id <= 0 || !Number.isFinite(amount) || amount < 0) {
-      notifyError('Укажите корректные id и amount')
+      notifyError('Выберите счет и корректную сумму')
       return
     }
 
@@ -196,6 +213,11 @@ export function useAccountsPageModel(
     delete: {
       onDelete,
       isPending: deleteMutation.isPending,
+    },
+    lookups: {
+      accounts: accountsLookupQuery.data ?? [],
+      users: usersQuery.data ?? [],
+      currencies: currenciesQuery.data ?? [],
     },
     rows,
     rowsErrorMessage: accountsQuery.error ? getErrorMessage(accountsQuery.error) : null,

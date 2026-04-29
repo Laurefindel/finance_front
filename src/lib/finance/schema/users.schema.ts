@@ -3,7 +3,10 @@ import { z } from 'zod'
 export const UserRequestSchema = z.object({
   firstName: z.string().trim().min(1),
   lastName: z.string().trim().min(1),
-  email: z.string().trim().email(),
+  email: z
+    .string()
+    .trim()
+    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Некорректный email'),
   password: z.string().min(1),
 })
 

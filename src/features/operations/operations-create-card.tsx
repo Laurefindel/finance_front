@@ -2,18 +2,46 @@ import { Button } from '#/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '#/components/ui/select'
 import type { FormCardProps } from '#/features/shared/contracts'
+import type { AccountResponse } from '#/lib/finance/schemas'
 import type { OperationCreateFormState } from './types'
 
 interface OperationsCreateCardProps
-  extends FormCardProps<OperationCreateFormState> {}
+  extends FormCardProps<OperationCreateFormState> {
+  accounts: AccountResponse[]
+}
+
+function formatAccountLabel(account: AccountResponse) {
+  const owner = `${account.user?.firstName ?? ''} ${
+    account.user?.lastName ?? ''
+  }`.trim()
+  const currency = account.currency?.code?.trim().toUpperCase() || '---'
+  const balance =
+    typeof account.balance === 'number'
+      ? account.balance.toFixed(2)
+      : '-'
+
+  return `${owner || 'Без владельца'} · ${currency} · ${balance}`
+}
 
 export function OperationsCreateCard({
   value,
   onChange,
   onApply,
   isPending,
-}: OperationsCreateCardProps) {
+  accounts,
+}: Readonly<OperationsCreateCardProps>) {
+  const normalizedAccounts = accounts.filter(
+    (account) => typeof account.id === 'number',
+  )
+
   return (
     <Card>
       <CardHeader>
@@ -22,30 +50,52 @@ export function OperationsCreateCard({
       <CardContent>
         <form className="grid gap-4 md:grid-cols-2" onSubmit={onApply}>
           <div className="space-y-2">
-            <Label>ID счета отправителя</Label>
-            <Input
-              value={value.senderAccountId}
-              onChange={(event) =>
+            <Label htmlFor="senderAccount">Счет отправителя</Label>
+            <Select
+              value={value.senderAccountId || 'none'}
+              onValueChange={(nextValue) =>
                 onChange((prev) => ({
                   ...prev,
-                  senderAccountId: event.target.value,
+                  senderAccountId: nextValue === 'none' ? '' : nextValue,
                 }))
               }
-              required
-            />
+            >
+              <SelectTrigger id="senderAccount" className="w-full">
+                <SelectValue placeholder="Выберите счет" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Не выбрано</SelectItem>
+                {normalizedAccounts.map((account) => (
+                  <SelectItem key={account.id} value={String(account.id)}>
+                    {formatAccountLabel(account)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
-            <Label>ID счета получателя</Label>
-            <Input
-              value={value.receiverAccountId}
-              onChange={(event) =>
+            <Label htmlFor="receiverAccount">Счет получателя</Label>
+            <Select
+              value={value.receiverAccountId || 'none'}
+              onValueChange={(nextValue) =>
                 onChange((prev) => ({
                   ...prev,
-                  receiverAccountId: event.target.value,
+                  receiverAccountId: nextValue === 'none' ? '' : nextValue,
                 }))
               }
-              required
-            />
+            >
+              <SelectTrigger id="receiverAccount" className="w-full">
+                <SelectValue placeholder="Выберите счет" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Не выбрано</SelectItem>
+                {normalizedAccounts.map((account) => (
+                  <SelectItem key={account.id} value={String(account.id)}>
+                    {formatAccountLabel(account)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label>Сумма</Label>

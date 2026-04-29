@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useMemo, useState, type SyntheticEvent } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import type { FormActionModel } from '#/features/shared/action-models'
 import {
@@ -64,14 +64,22 @@ export function useAsyncReplenishPageModel(
   const isTerminalStatus =
     normalizedStatus === 'SUCCEEDED' || normalizedStatus === 'FAILED'
 
+  const metricsRefetchInterval = useMemo(() => {
+    if (!taskId) {
+      return ASYNC_IDLE_METRICS_POLL_MS
+    }
+
+    if (isTerminalStatus) {
+      return false
+    }
+
+    return ASYNC_METRICS_POLL_MS
+  }, [isTerminalStatus, taskId])
+
   const metricsQuery = useQuery({
     queryKey: financeQueryKeys.asyncMetrics,
     queryFn: () => getAsyncMetricsFn(),
-    refetchInterval: !taskId
-      ? ASYNC_IDLE_METRICS_POLL_MS
-      : isTerminalStatus
-        ? false
-        : ASYNC_METRICS_POLL_MS,
+    refetchInterval: metricsRefetchInterval,
   })
 
   const metrics = useMemo<AsyncMetricsSnapshot>(
@@ -121,14 +129,14 @@ export function useAsyncReplenishPageModel(
     return mapStatusToTone(normalizedStatus)
   }, [normalizedStatus])
 
-  const onApply = async (event: FormEvent<HTMLFormElement>) => {
+  const onApply = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     const accountId = Number(form.accountId)
     const amount = Number(form.amount)
 
     if (!Number.isInteger(accountId) || accountId <= 0 || !Number.isFinite(amount) || amount < 0) {
-      notifications?.onValidationError?.('Укажите корректные accountId и amount')
+      notifications?.onValidationError?.('Выберите счет и корректную сумму')
       return
     }
 

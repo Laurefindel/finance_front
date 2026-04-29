@@ -14,17 +14,6 @@ export function createAccountsTableColumns({
 }: AccountsTableColumnsOptions): Array<ColumnDef<AccountResponse>> {
   return [
     {
-      accessorKey: 'id',
-      header: 'ID',
-      cell: ({ row }) => (
-        <AccountsOperationsHover
-          accountId={row.original.id}
-          incomingOperations={row.original.incomingOperations ?? []}
-          outcomingOperations={row.original.outcomingOperations ?? []}
-        />
-      ),
-    },
-    {
       accessorKey: 'balance',
       header: 'Баланс',
       cell: ({ row }) => {
@@ -50,6 +39,17 @@ export function createAccountsTableColumns({
       cell: ({ row }) => row.original.currency?.code ?? '-',
     },
     {
+      id: 'operations',
+      header: 'Операции',
+      cell: ({ row }) => (
+        <AccountsOperationsHover
+          accountId={row.original.id}
+          incomingOperations={row.original.incomingOperations ?? []}
+          outcomingOperations={row.original.outcomingOperations ?? []}
+        />
+      ),
+    },
+    {
       id: 'incoming',
       header: 'Входящие',
       cell: ({ row }) => row.original.incomingOperations?.length ?? 0,
@@ -68,7 +68,7 @@ export function createAccountsTableColumns({
         return (
           <ConfirmDialogButton
             triggerLabel="Удалить"
-            title={`Удалить счет #${id ?? '?'}`}
+            title="Удалить счет?"
             description="Действие необратимо. Счет и связанные данные нельзя будет восстановить автоматически."
             confirmLabel="Удалить"
             disabled={!id || isDeletePending}

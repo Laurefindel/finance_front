@@ -14,12 +14,12 @@ import {
 } from '#/components/ui/table'
 import { cn } from '#/lib/utils'
 
-interface DataTableProps<TData, TValue> {
+type DataTableProps<TData, TValue> = Readonly<{
   columns: Array<ColumnDef<TData, TValue>>
   data: TData[]
   emptyMessage?: string
   className?: string
-}
+}>
 
 export function DataTable<TData, TValue>({
   columns,

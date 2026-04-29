@@ -28,10 +28,6 @@ export function createUsersTableColumns({
 }: CreateUsersTableColumnsOptions): Array<ColumnDef<UserResponse>> {
   return [
     {
-      accessorKey: 'id',
-      header: 'ID',
-    },
-    {
       accessorKey: 'firstName',
       header: 'Имя',
       cell: ({ row }) => (
@@ -77,7 +73,7 @@ export function createUsersTableColumns({
 
             <ConfirmDialogButton
               triggerLabel="Удалить"
-              title={`Удалить пользователя #${id ?? '?'}`}
+              title="Удалить пользователя?"
               description="Пользователь будет удален. Убедитесь, что это не нарушит связанные бизнес-процессы."
               confirmLabel="Удалить"
               disabled={!id || isDeletePending}

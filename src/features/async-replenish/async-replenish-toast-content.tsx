@@ -18,7 +18,6 @@ export interface AsyncToastPayload extends AsyncMetricsSnapshot {
 }
 
 export function buildAsyncToastContent({
-  taskId,
   status,
   message,
   submitted,
@@ -26,12 +25,13 @@ export function buildAsyncToastContent({
   succeeded,
   failed,
 }: AsyncToastPayload) {
-  const statusVariant =
-    status === 'FAILED'
-      ? 'destructive'
-      : status === 'SUCCEEDED'
-        ? 'default'
-        : 'secondary'
+  let statusVariant: 'destructive' | 'default' | 'secondary' = 'secondary'
+
+  if (status === 'FAILED') {
+    statusVariant = 'destructive'
+  } else if (status === 'SUCCEEDED') {
+    statusVariant = 'default'
+  }
 
   return (
     <div className="flex min-w-72 flex-col gap-2">
@@ -39,7 +39,6 @@ export function buildAsyncToastContent({
         <p className="text-sm font-semibold">Async replenish</p>
         <Badge variant={statusVariant}>{status}</Badge>
       </div>
-      <p className="text-xs text-muted-foreground">taskId: {taskId}</p>
       <p className="text-xs leading-relaxed">{message}</p>
       <div className="grid grid-cols-2 gap-1 text-[11px] sm:grid-cols-4">
         <span className="rounded-md bg-muted px-2 py-1">submitted: {submitted}</span>

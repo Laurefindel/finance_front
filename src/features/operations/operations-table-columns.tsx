@@ -23,10 +23,6 @@ export function createOperationsTableColumns({
 }: CreateOperationsTableColumnsOptions): Array<ColumnDef<FinancialOperationResponse>> {
   return [
     {
-      accessorKey: 'id',
-      header: 'ID',
-    },
-    {
       accessorKey: 'senderAccountId',
       header: 'Отправитель',
       cell: ({ row }) => {
@@ -83,7 +79,7 @@ export function createOperationsTableColumns({
         return (
           <ConfirmDialogButton
             triggerLabel="Удалить"
-            title={`Удалить операцию #${id ?? '?'}`}
+            title="Удалить операцию?"
             description="Операция будет удалена из списка. Продолжить?"
             confirmLabel="Удалить"
             disabled={!id || isDeletePending}

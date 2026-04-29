@@ -1,15 +1,29 @@
-import { type Dispatch, type FormEvent, type SetStateAction } from 'react'
+import { type Dispatch, type SyntheticEvent, type SetStateAction } from 'react'
 import { Button } from '#/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '#/components/ui/select'
+import type { UserResponse } from '#/lib/finance/schemas'
 import type { OperationFilterState } from './types'
 
 interface OperationsFiltersCardProps {
   value: OperationFilterState
   onChange: Dispatch<SetStateAction<OperationFilterState>>
-  onApply: (event: FormEvent<HTMLFormElement>) => void
+  onApply: (event: SyntheticEvent<HTMLFormElement>) => void
   onReset: () => void
+  users: UserResponse[]
+}
+
+function formatUserLabel(user: UserResponse) {
+  const name = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
+  return name || user.email?.trim() || 'Без имени'
 }
 
 export function OperationsFiltersCard({
@@ -17,7 +31,10 @@ export function OperationsFiltersCard({
   onChange,
   onApply,
   onReset,
-}: OperationsFiltersCardProps) {
+  users,
+}: Readonly<OperationsFiltersCardProps>) {
+  const normalizedUsers = users.filter((user) => typeof user.id === 'number')
+
   return (
     <Card>
       <CardHeader>
@@ -35,28 +52,52 @@ export function OperationsFiltersCard({
             />
           </div>
           <div className="space-y-2">
-            <Label>ID пользователя-отправителя</Label>
-            <Input
-              value={value.senderUserId}
-              onChange={(event) =>
+            <Label htmlFor="senderUser">Пользователь-отправитель</Label>
+            <Select
+              value={value.senderUserId || 'all'}
+              onValueChange={(nextValue) =>
                 onChange((prev) => ({
                   ...prev,
-                  senderUserId: event.target.value,
+                  senderUserId: nextValue === 'all' ? '' : nextValue,
                 }))
               }
-            />
+            >
+              <SelectTrigger id="senderUser" className="w-full">
+                <SelectValue placeholder="Любой" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Любой</SelectItem>
+                {normalizedUsers.map((user) => (
+                  <SelectItem key={user.id} value={String(user.id)}>
+                    {formatUserLabel(user)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
-            <Label>ID пользователя-получателя</Label>
-            <Input
-              value={value.receiverUserId}
-              onChange={(event) =>
+            <Label htmlFor="receiverUser">Пользователь-получатель</Label>
+            <Select
+              value={value.receiverUserId || 'all'}
+              onValueChange={(nextValue) =>
                 onChange((prev) => ({
                   ...prev,
-                  receiverUserId: event.target.value,
+                  receiverUserId: nextValue === 'all' ? '' : nextValue,
                 }))
               }
-            />
+            >
+              <SelectTrigger id="receiverUser" className="w-full">
+                <SelectValue placeholder="Любой" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Любой</SelectItem>
+                {normalizedUsers.map((user) => (
+                  <SelectItem key={user.id} value={String(user.id)}>
+                    {formatUserLabel(user)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label>Код валюты</Label>

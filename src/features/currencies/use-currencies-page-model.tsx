@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type SyntheticEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type {
   FormActionModel,
@@ -7,6 +7,7 @@ import type {
 import {
   createCurrencyFn,
   deleteCurrencyFn,
+  getCurrencyByCodeFn,
   listCurrenciesFn,
   updateCurrencyFn,
 } from '#/lib/finance/finance.functions'
@@ -95,7 +96,7 @@ export function useCurrenciesPageModel(
     },
   })
 
-  const onCreateSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const onCreateSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     try {
@@ -108,26 +109,34 @@ export function useCurrenciesPageModel(
     }
   }
 
-  const onUpdateSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const onUpdateSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    const parsedId = Number(updateForm.id)
+    const currentCode = updateForm.currentCode.trim().toUpperCase()
 
-    if (!Number.isFinite(parsedId) || parsedId <= 0) {
-      notifications?.onError?.('Укажите корректный ID валюты')
+    if (!currentCode) {
+      notifications?.onError?.('Выберите валюту для обновления')
       return
     }
 
     try {
+      const current = await getCurrencyByCodeFn({ data: { code: currentCode } })
+      const currentId = current?.id
+
+      if (!currentId || currentId <= 0) {
+        notifications?.onError?.('Не удалось определить ID валюты')
+        return
+      }
+
       await updateMutation.mutateAsync({
-        id: parsedId,
+        id: currentId,
         payload: {
           code: updateForm.code.trim().toUpperCase(),
           name: updateForm.name.trim(),
         },
       })
-    } catch {
-      // onError already shows a toast; swallow to avoid unhandled promise in console.
+    } catch (error) {
+      notifications?.onError?.(getErrorMessage(error))
     }
   }
 

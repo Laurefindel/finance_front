@@ -13,10 +13,6 @@ export function createCurrenciesTableColumns({
 }: CreateCurrenciesTableColumnsOptions): Array<ColumnDef<CurrencyResponse>> {
   return [
     {
-      accessorKey: 'id',
-      header: 'ID',
-    },
-    {
       accessorKey: 'code',
       header: 'Код',
     },
@@ -33,7 +29,7 @@ export function createCurrenciesTableColumns({
         return (
           <ConfirmDialogButton
             triggerLabel="Удалить"
-            title={`Удалить валюту #${id ?? '?'}`}
+            title="Удалить валюту?"
             description="Валюта будет удалена из справочника. Убедитесь, что она не используется в активных сценариях."
             confirmLabel="Удалить"
             disabled={!id || isDeletePending}

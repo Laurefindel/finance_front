@@ -29,6 +29,15 @@ function getDisplayName(user: UserResponse | undefined) {
   return fullName || '-'
 }
 
+function getTriggerLabel(user: UserResponse | undefined) {
+  if (!user) {
+    return 'Счет'
+  }
+
+  const fullName = `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
+  return fullName || user.email?.trim() || 'Счет'
+}
+
 export function OperationsPartyHover({
   accountId,
   account,
@@ -45,9 +54,9 @@ export function OperationsPartyHover({
         <button
           type="button"
           className="inline-flex cursor-help items-center rounded-md border border-transparent px-2 py-1 text-sm font-medium text-foreground transition-colors hover:border-border hover:bg-muted/60"
-          aria-label={`Информация о ${label.toLowerCase()}е ${accountId}`}
+          aria-label={`Информация о ${label.toLowerCase()}`}
         >
-          #{accountId}
+          {getTriggerLabel(user)}
         </button>
       </TooltipTrigger>
       <TooltipContent
@@ -57,9 +66,7 @@ export function OperationsPartyHover({
       >
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold">
-              {label}: счет #{accountId}
-            </p>
+            <p className="text-xs font-semibold">{label}</p>
             <Badge variant="secondary">{account?.currency?.code ?? '-'}</Badge>
           </div>
 

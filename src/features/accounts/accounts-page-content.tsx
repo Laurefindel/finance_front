@@ -72,6 +72,8 @@ export function AccountsPageContent() {
               onChange={model.create.setForm}
               onApply={model.create.onApply}
               isPending={model.create.isPending}
+              users={model.lookups.users}
+              currencies={model.lookups.currencies}
             />
           </DialogContent>
         </Dialog>
@@ -82,6 +84,7 @@ export function AccountsPageContent() {
         onChange={model.replenish.setForm}
         onApply={model.replenish.onApply}
         isPending={model.replenish.isPending}
+        accounts={model.lookups.accounts}
       />
 
       <section className="space-y-4">
@@ -93,6 +96,7 @@ export function AccountsPageContent() {
           onChange={asyncModel.setForm}
           onApply={asyncModel.onApply}
           isPending={asyncModel.isSubmitPending}
+          accounts={model.lookups.accounts}
         />
 
         <div className="grid gap-6 lg:grid-cols-2">
@@ -117,6 +121,8 @@ export function AccountsPageContent() {
         value={model.filters.form}
         onChange={model.filters.setForm}
         onReset={model.filters.onReset}
+        users={model.lookups.users}
+        currencies={model.lookups.currencies}
       />
 
       <AccountsTableCard

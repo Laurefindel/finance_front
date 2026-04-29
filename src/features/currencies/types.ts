@@ -9,13 +9,13 @@ export const defaultCreateCurrencyForm: CreateCurrencyFormState = {
 }
 
 export interface UpdateCurrencyFormState {
-  id: string
+  currentCode: string
   code: string
   name: string
 }
 
 export const defaultUpdateCurrencyForm: UpdateCurrencyFormState = {
-  id: '',
+  currentCode: '',
   code: '',
   name: '',
 }

@@ -35,7 +35,11 @@ function operationKey(operation: FinancialOperationResponse, index: number) {
   return `${operation.senderAccountId ?? 'na'}-${operation.receiverAccountId ?? 'na'}-${index}`
 }
 
-function OperationsGroup({ title, items, emptyText }: OperationsGroupProps) {
+function OperationsGroup({
+  title,
+  items,
+  emptyText,
+}: Readonly<OperationsGroupProps>) {
   const visibleItems = items.slice(0, MAX_VISIBLE_OPERATIONS)
 
   return (
@@ -51,8 +55,7 @@ function OperationsGroup({ title, items, emptyText }: OperationsGroupProps) {
               className="rounded-md border border-background/20 bg-background/5 px-2 py-1"
             >
               <p className="text-[11px] font-medium leading-tight text-background">
-                #{operation.id ?? '?'}: {operation.senderAccountId ?? '?'} -&gt;{' '}
-                {operation.receiverAccountId ?? '?'}
+                Перевод
               </p>
               <p className="text-[11px] leading-tight text-background/80">
                 {formatOperationAmount(operation)} {operation.currencyCode ?? ''}
@@ -81,7 +84,7 @@ export function AccountsOperationsHover({
   accountId,
   incomingOperations,
   outcomingOperations,
-}: AccountsOperationsHoverProps) {
+}: Readonly<AccountsOperationsHoverProps>) {
   if (typeof accountId !== 'number') {
     return <span>-</span>
   }
@@ -92,9 +95,9 @@ export function AccountsOperationsHover({
         <button
           type="button"
           className="inline-flex cursor-help items-center gap-1 rounded-md border border-transparent px-2 py-1 text-sm font-medium text-foreground transition-colors hover:border-border hover:bg-muted/60"
-          aria-label={`Операции по счету ${accountId}`}
+          aria-label="Операции по счету"
         >
-          <span>#{accountId}</span>
+          <span>Операции</span>
         </button>
       </TooltipTrigger>
       <TooltipContent
@@ -104,7 +107,7 @@ export function AccountsOperationsHover({
       >
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold">Счет #{accountId}</p>
+            <p className="text-xs font-semibold">Операции по счету</p>
             <div className="flex items-center gap-1">
               <Badge variant="secondary">входящие: {incomingOperations.length}</Badge>
               <Badge variant="secondary">исходящие: {outcomingOperations.length}</Badge>
