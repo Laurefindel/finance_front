@@ -6,12 +6,9 @@ export function DashboardModulesCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Дополнительные модули</CardTitle>
+        <CardTitle>Дополнительно</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-wrap gap-3">
-        <Button asChild variant="secondary">
-          <Link to="/concurrency">Concurrency Demo</Link>
-        </Button>
         <Button asChild variant="secondary">
           <Link to="/about">О проекте</Link>
         </Button>

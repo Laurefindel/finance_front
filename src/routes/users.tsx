@@ -1,6 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { toast } from 'sonner'
+import { Button } from '#/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '#/components/ui/dialog'
 import { UsersCreateCard } from '#/features/users/users-create-card'
 import { createUsersTableColumns } from '#/features/users/users-table-columns'
 import { UsersTableCard } from '#/features/users/users-table-card'
@@ -21,25 +29,42 @@ function UsersPage() {
     () =>
       createUsersTableColumns({
         isDeletePending: model.remove.isPending,
+        isUpdatePending: model.update.isPending,
         onDelete: model.remove.onDelete,
+        onUpdate: model.update.onUpdate,
       }),
-    [model.remove.isPending, model.remove.onDelete],
+    [
+      model.remove.isPending,
+      model.remove.onDelete,
+      model.update.isPending,
+      model.update.onUpdate,
+    ],
   )
 
   return (
     <main className="page-wrap space-y-6 px-4 py-8">
       <PageHeaderSection
-        kicker="Users"
+        kicker="Пользователи"
         title="Пользователи"
         description="Регистрация и управление пользователями Finance API."
       />
 
-      <UsersCreateCard
-        value={model.form}
-        onChange={model.setForm}
-        onApply={model.onApply}
-        isPending={model.isSubmitPending}
-      />
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button>Создать пользователя</Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Новый пользователь</DialogTitle>
+          </DialogHeader>
+          <UsersCreateCard
+            value={model.form}
+            onChange={model.setForm}
+            onApply={model.onApply}
+            isPending={model.isSubmitPending}
+          />
+        </DialogContent>
+      </Dialog>
 
       <UsersTableCard
         columns={columns}

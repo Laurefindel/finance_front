@@ -31,14 +31,12 @@ export function useDashboardPageModel() {
         },
         {
           queryKey: financeQueryKeys.operationsSearch({
-            queryType: 'jpql',
             page: 1,
             size: 1,
           }),
           queryFn: () =>
             searchOperationsFn({
               data: {
-                queryType: 'jpql',
                 page: 0,
                 size: 1,
                 criteria: {},
@@ -50,31 +48,31 @@ export function useDashboardPageModel() {
 
   const cards: DashboardStatCard[] = [
     {
-      title: 'Users',
+      title: 'Пользователи',
       value: usersQuery.data?.length ?? 0,
       to: '/users',
       description: 'Регистрация и управление пользователями',
     },
     {
-      title: 'Roles',
+      title: 'Роли',
       value: rolesQuery.data?.length ?? 0,
       to: '/roles',
       description: 'Справочник ролей',
     },
     {
-      title: 'Currencies',
+      title: 'Валюты',
       value: currenciesQuery.data?.length ?? 0,
       to: '/currencies',
       description: 'Коды и названия валют',
     },
     {
-      title: 'Accounts',
+      title: 'Счета',
       value: accountsQuery.data?.length ?? 0,
       to: '/accounts',
       description: 'Баланс и счета пользователей',
     },
     {
-      title: 'Operations',
+      title: 'Операции',
       value: operationsQuery.data?.totalElements ?? 0,
       to: '/operations',
       description: 'Финансовые операции и поиск',

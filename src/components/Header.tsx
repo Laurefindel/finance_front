@@ -13,14 +13,13 @@ import {
 import ThemeToggle from './ThemeToggle'
 
 const appLinks = [
-  { to: '/', label: 'Dashboard' },
-  { to: '/users', label: 'Users' },
-  { to: '/roles', label: 'Roles' },
-  { to: '/currencies', label: 'Currencies' },
-  { to: '/accounts', label: 'Accounts' },
-  { to: '/operations', label: 'Operations' },
-  { to: '/concurrency', label: 'Concurrency' },
-  { to: '/about', label: 'About' },
+  { to: '/', label: 'Главная' },
+  { to: '/users', label: 'Пользователи' },
+  { to: '/roles', label: 'Роли' },
+  { to: '/currencies', label: 'Валюты' },
+  { to: '/accounts', label: 'Счета' },
+  { to: '/operations', label: 'Операции' },
+  { to: '/about', label: 'О проекте' },
 ] as const
 
 const desktopNavListClassName =
@@ -45,7 +44,7 @@ export default function Header() {
             to="/"
             className="inline-flex h-9 items-center text-base text-(--sea-ink) no-underline transition-colors hover:text-(--lagoon-deep) sm:text-lg"
           >
-            Finance Console
+            Финансовая консоль
           </Link>
         </h2>
 
@@ -83,8 +82,8 @@ export default function Header() {
 
             <SheetContent side="right" className="w-[86vw] sm:max-w-sm">
               <SheetHeader>
-                <SheetTitle>Navigation</SheetTitle>
-                <SheetDescription>Выберите раздел Finance Console</SheetDescription>
+                <SheetTitle>Навигация</SheetTitle>
+                <SheetDescription>Выберите раздел финансовой консоли</SheetDescription>
               </SheetHeader>
 
               <nav aria-label="Mobile primary" className="px-4 pb-6">

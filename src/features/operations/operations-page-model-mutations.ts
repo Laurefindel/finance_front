@@ -57,7 +57,7 @@ export function useOperationsPageModelMutations({
     mutationFn: (payload: FinancialOperationRequest[]) =>
       createBulkOperationsFn({ data: payload }),
     onSuccess: async () => {
-      notifications?.onSuccess?.('Bulk операции (transactional) созданы')
+      notifications?.onSuccess?.('Массовые операции созданы (транзакционный режим)')
       await invalidateOperationsAndAccounts(queryClient)
     },
     onError: (error) => {
@@ -69,7 +69,9 @@ export function useOperationsPageModelMutations({
     mutationFn: (payload: FinancialOperationRequest[]) =>
       createBulkOperationsNoTxFn({ data: payload }),
     onSuccess: async () => {
-      notifications?.onSuccess?.('Bulk операции (non-transactional) созданы')
+      notifications?.onSuccess?.(
+        'Массовые операции созданы (без транзакционного режима)',
+      )
       await invalidateOperationsAndAccounts(queryClient)
     },
     onError: (error) => {

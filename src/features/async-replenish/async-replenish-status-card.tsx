@@ -24,10 +24,11 @@ export function AsyncReplenishStatusCard({
         {taskId ? (
           <>
             <p className="text-sm text-muted-foreground">
-              taskId: <span className="font-medium text-foreground">{taskId}</span>
+              ID задачи:{' '}
+              <span className="font-medium text-foreground">{taskId}</span>
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">status:</span>
+              <span className="text-sm text-muted-foreground">Статус:</span>
               <Badge variant={statusTone}>{status ?? 'PENDING'}</Badge>
             </div>
             <p className="text-sm text-muted-foreground">

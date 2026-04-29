@@ -1,6 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { toast } from 'sonner'
+import { Button } from '#/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '#/components/ui/dialog'
 import { CurrenciesCreateCard } from '#/features/currencies/currencies-create-card'
 import { createCurrenciesTableColumns } from '#/features/currencies/currencies-table-columns'
 import { CurrenciesTableCard } from '#/features/currencies/currencies-table-card'
@@ -30,25 +38,45 @@ function CurrenciesPage() {
   return (
     <main className="page-wrap space-y-6 px-4 py-8">
       <PageHeaderSection
-        kicker="Currencies"
+        kicker="Валюты"
         title="Валюты"
         description="Справочник валют: создание, обновление и удаление."
       />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <CurrenciesCreateCard
-          value={model.create.form}
-          onChange={model.create.setForm}
-          onApply={model.create.onApply}
-          isPending={model.create.isPending}
-        />
+      <div className="flex flex-wrap gap-3">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>Создать валюту</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-xl">
+            <DialogHeader>
+              <DialogTitle>Новая валюта</DialogTitle>
+            </DialogHeader>
+            <CurrenciesCreateCard
+              value={model.create.form}
+              onChange={model.create.setForm}
+              onApply={model.create.onApply}
+              isPending={model.create.isPending}
+            />
+          </DialogContent>
+        </Dialog>
 
-        <CurrenciesUpdateCard
-          value={model.update.form}
-          onChange={model.update.setForm}
-          onApply={model.update.onApply}
-          isPending={model.update.isPending}
-        />
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">Редактировать валюту</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-xl">
+            <DialogHeader>
+              <DialogTitle>Редактирование валюты</DialogTitle>
+            </DialogHeader>
+            <CurrenciesUpdateCard
+              value={model.update.form}
+              onChange={model.update.setForm}
+              onApply={model.update.onApply}
+              isPending={model.update.isPending}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
       <CurrenciesTableCard

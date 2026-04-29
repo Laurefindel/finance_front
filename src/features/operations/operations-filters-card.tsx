@@ -3,13 +3,6 @@ import { Button } from '#/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '#/components/ui/select'
 import type { OperationFilterState } from './types'
 
 interface OperationsFiltersCardProps {
@@ -33,24 +26,7 @@ export function OperationsFiltersCard({
       <CardContent>
         <form className="grid gap-4 md:grid-cols-3" onSubmit={onApply}>
           <div className="space-y-2">
-            <Label>Query mode</Label>
-            <Select
-              value={value.queryType}
-              onValueChange={(queryType: 'jpql' | 'criteria') =>
-                onChange((prev) => ({ ...prev, queryType }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="jpql">jpql</SelectItem>
-                <SelectItem value="criteria">criteria</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>Page size</Label>
+            <Label>Размер страницы</Label>
             <Input
               value={value.size}
               onChange={(event) =>
@@ -59,7 +35,7 @@ export function OperationsFiltersCard({
             />
           </div>
           <div className="space-y-2">
-            <Label>senderUserId</Label>
+            <Label>ID пользователя-отправителя</Label>
             <Input
               value={value.senderUserId}
               onChange={(event) =>
@@ -71,7 +47,7 @@ export function OperationsFiltersCard({
             />
           </div>
           <div className="space-y-2">
-            <Label>receiverUserId</Label>
+            <Label>ID пользователя-получателя</Label>
             <Input
               value={value.receiverUserId}
               onChange={(event) =>
@@ -83,7 +59,7 @@ export function OperationsFiltersCard({
             />
           </div>
           <div className="space-y-2">
-            <Label>currencyCode</Label>
+            <Label>Код валюты</Label>
             <Input
               value={value.currencyCode}
               onChange={(event) =>
@@ -95,7 +71,7 @@ export function OperationsFiltersCard({
             />
           </div>
           <div className="space-y-2">
-            <Label>minAmount</Label>
+            <Label>Минимальная сумма</Label>
             <Input
               type="number"
               step="0.01"
@@ -110,7 +86,7 @@ export function OperationsFiltersCard({
             />
           </div>
           <div className="space-y-2">
-            <Label>maxAmount</Label>
+            <Label>Максимальная сумма</Label>
             <Input
               type="number"
               step="0.01"
@@ -125,7 +101,7 @@ export function OperationsFiltersCard({
             />
           </div>
           <div className="space-y-2">
-            <Label>fromDate</Label>
+            <Label>Дата с</Label>
             <Input
               type="datetime-local"
               value={value.fromDate}
@@ -138,7 +114,7 @@ export function OperationsFiltersCard({
             />
           </div>
           <div className="space-y-2">
-            <Label>toDate</Label>
+            <Label>Дата по</Label>
             <Input
               type="datetime-local"
               value={value.toDate}

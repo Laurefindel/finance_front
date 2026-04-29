@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type {
   FormActionModel,
@@ -7,6 +7,7 @@ import {
   createUserFn,
   deleteUserFn,
   listUsersFn,
+  updateUserFn,
 } from '#/lib/finance/finance.functions'
 import { getErrorMessage } from '#/lib/finance/errors/error-message'
 import { financeQueryKeys } from '#/lib/finance/queries/query-keys'
@@ -32,6 +33,18 @@ interface UsersPageModelNotifications {
 
 interface DeleteUserAction {
   onDelete: (id: number) => Promise<void>
+  isPending: boolean
+}
+
+interface UpdateUserPayload {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+}
+
+interface UpdateUserAction {
+  onUpdate: (id: number, payload: UpdateUserPayload) => Promise<void>
   isPending: boolean
 }
 
@@ -91,7 +104,33 @@ export function useUsersPageModel(
     },
   })
 
-  const onApply = async (event: FormEvent<HTMLFormElement>) => {
+  const updateUserMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: UpdateUserPayload }) =>
+      updateUserFn({ data: { id, payload } }),
+    onSuccess: (updatedUser) => {
+      notifications?.onSuccess?.('Пользователь обновлен')
+
+      queryClient.setQueryData<UserResponse[]>(
+        financeQueryKeys.users,
+        (previous = []) => {
+          const nextUser = normalizeUser(updatedUser)
+
+          if (!nextUser.id) {
+            return previous
+          }
+
+          return previous.map((item) =>
+            item.id === nextUser.id ? nextUser : item,
+          )
+        },
+      )
+    },
+    onError: (error) => {
+      notifications?.onError?.(getErrorMessage(error))
+    },
+  })
+
+  const onApply = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     try {
@@ -114,6 +153,14 @@ export function useUsersPageModel(
     }
   }
 
+  const onUpdate = async (id: number, payload: UpdateUserPayload) => {
+    try {
+      await updateUserMutation.mutateAsync({ id, payload })
+    } catch {
+      // onError already reports the issue.
+    }
+  }
+
   const rows = (usersQuery.data ?? []).map(normalizeUser)
   const rowsErrorMessage = usersQuery.error ? getErrorMessage(usersQuery.error) : null
   const hasRows = rows.length > 0
@@ -130,6 +177,11 @@ export function useUsersPageModel(
     isPending: deleteUserMutation.isPending,
   }
 
+  const update: UpdateUserAction = {
+    onUpdate,
+    isPending: updateUserMutation.isPending,
+  }
+
   return {
     form: create.form,
     setForm: create.setForm,
@@ -141,5 +193,6 @@ export function useUsersPageModel(
     isFatalError: Boolean(usersQuery.error) && !hasRows,
     hasRefreshError: Boolean(usersQuery.error) && hasRows,
     remove,
+    update,
   }
 }

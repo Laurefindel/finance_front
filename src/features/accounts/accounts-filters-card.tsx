@@ -24,7 +24,7 @@ export function AccountsFiltersCard({
       <CardContent>
         <form className="grid gap-4 md:grid-cols-3">
           <div className="space-y-2">
-            <Label htmlFor="filterUserId">userId</Label>
+            <Label htmlFor="filterUserId">ID пользователя</Label>
             <Input
               id="filterUserId"
               value={value.userId}
@@ -34,7 +34,7 @@ export function AccountsFiltersCard({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="filterCurrency">currency code</Label>
+            <Label htmlFor="filterCurrency">Код валюты</Label>
             <Input
               id="filterCurrency"
               value={value.currency}

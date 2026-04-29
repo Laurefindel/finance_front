@@ -106,8 +106,8 @@ export function AccountsOperationsHover({
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs font-semibold">Счет #{accountId}</p>
             <div className="flex items-center gap-1">
-              <Badge variant="secondary">in: {incomingOperations.length}</Badge>
-              <Badge variant="secondary">out: {outcomingOperations.length}</Badge>
+              <Badge variant="secondary">входящие: {incomingOperations.length}</Badge>
+              <Badge variant="secondary">исходящие: {outcomingOperations.length}</Badge>
             </div>
           </div>
 

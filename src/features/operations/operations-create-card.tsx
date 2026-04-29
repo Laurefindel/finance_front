@@ -22,7 +22,7 @@ export function OperationsCreateCard({
       <CardContent>
         <form className="grid gap-4 md:grid-cols-2" onSubmit={onApply}>
           <div className="space-y-2">
-            <Label>senderAccountId</Label>
+            <Label>ID счета отправителя</Label>
             <Input
               value={value.senderAccountId}
               onChange={(event) =>
@@ -35,7 +35,7 @@ export function OperationsCreateCard({
             />
           </div>
           <div className="space-y-2">
-            <Label>receiverAccountId</Label>
+            <Label>ID счета получателя</Label>
             <Input
               value={value.receiverAccountId}
               onChange={(event) =>
@@ -48,7 +48,7 @@ export function OperationsCreateCard({
             />
           </div>
           <div className="space-y-2">
-            <Label>amount</Label>
+            <Label>Сумма</Label>
             <Input
               type="number"
               step="0.01"
@@ -64,7 +64,7 @@ export function OperationsCreateCard({
             />
           </div>
           <div className="space-y-2">
-            <Label>description</Label>
+            <Label>Описание</Label>
             <Input
               value={value.description}
               onChange={(event) =>

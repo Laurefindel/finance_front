@@ -1,6 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { toast } from 'sonner'
+import { Button } from '#/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '#/components/ui/dialog'
 import { RolesCreateCard } from '#/features/roles/roles-create-card'
 import { createRolesTableColumns } from '#/features/roles/roles-table-columns'
 import { RolesTableCard } from '#/features/roles/roles-table-card'
@@ -29,17 +37,27 @@ function RolesPage() {
   return (
     <main className="page-wrap space-y-6 px-4 py-8">
       <PageHeaderSection
-        kicker="Roles"
+        kicker="Роли"
         title="Роли"
         description="Управление справочником ролей."
       />
 
-      <RolesCreateCard
-        value={model.form}
-        onChange={model.setForm}
-        onApply={model.onApply}
-        isPending={model.isSubmitPending}
-      />
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button>Создать роль</Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Новая роль</DialogTitle>
+          </DialogHeader>
+          <RolesCreateCard
+            value={model.form}
+            onChange={model.setForm}
+            onApply={model.onApply}
+            isPending={model.isSubmitPending}
+          />
+        </DialogContent>
+      </Dialog>
 
       <RolesTableCard
         columns={columns}

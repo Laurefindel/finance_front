@@ -22,7 +22,7 @@ export function AsyncReplenishStartCard({
       <CardContent>
         <form className="grid gap-4 md:grid-cols-2" onSubmit={onApply}>
           <div className="space-y-2">
-            <Label htmlFor="asyncAccountId">accountId</Label>
+            <Label htmlFor="asyncAccountId">ID счета</Label>
             <Input
               id="asyncAccountId"
               type="number"
@@ -37,7 +37,7 @@ export function AsyncReplenishStartCard({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="asyncAmount">amount</Label>
+            <Label htmlFor="asyncAmount">Сумма</Label>
             <Input
               id="asyncAmount"
               type="number"

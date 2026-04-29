@@ -1,6 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { toast } from 'sonner'
+import { Button } from '#/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '#/components/ui/dialog'
 import { OperationsBulkCard } from '#/features/operations/operations-bulk-card'
 import { OperationsCreateCard } from '#/features/operations/operations-create-card'
 import { OperationsFiltersCard } from '#/features/operations/operations-filters-card'
@@ -24,39 +32,66 @@ function OperationsPage() {
       createOperationsTableColumns({
         isDeletePending: model.remove.isPending,
         onDelete: model.remove.onDelete,
+        getPartyDetails: model.table.getPartyDetails,
       }),
-    [model.remove.isPending, model.remove.onDelete],
+    [
+      model.remove.isPending,
+      model.remove.onDelete,
+      model.table.getPartyDetails,
+    ],
   )
 
   return (
     <main className="page-wrap space-y-6 px-4 py-8">
       <PageHeaderSection
-        kicker="Operations"
+        kicker="Операции"
         title="Операции"
         description="Поиск, создание, удаление и bulk-операции."
       />
+
+      <div className="flex flex-wrap gap-3">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>Создать операцию</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Новая операция</DialogTitle>
+            </DialogHeader>
+            <OperationsCreateCard
+              value={model.create.form}
+              onChange={model.create.setForm}
+              onApply={model.create.onApply}
+              isPending={model.create.isPending}
+            />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">Массовое создание</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle>Массовое создание операций</DialogTitle>
+            </DialogHeader>
+            <OperationsBulkCard
+              value={model.bulk.payload}
+              onChange={model.bulk.setPayload}
+              onApplyTransactional={model.bulk.transactional.onApply}
+              onApplyNonTransactional={model.bulk.nonTransactional.onApply}
+              isTransactionalPending={model.bulk.transactional.isPending}
+              isNonTransactionalPending={model.bulk.nonTransactional.isPending}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
 
       <OperationsFiltersCard
         value={model.filters.form}
         onChange={model.filters.setForm}
         onApply={model.filters.onApply}
         onReset={model.filters.onReset}
-      />
-
-      <OperationsCreateCard
-        value={model.create.form}
-        onChange={model.create.setForm}
-        onApply={model.create.onApply}
-        isPending={model.create.isPending}
-      />
-
-      <OperationsBulkCard
-        value={model.bulk.payload}
-        onChange={model.bulk.setPayload}
-        onApplyTransactional={model.bulk.transactional.onApply}
-        onApplyNonTransactional={model.bulk.nonTransactional.onApply}
-        isTransactionalPending={model.bulk.transactional.isPending}
-        isNonTransactionalPending={model.bulk.nonTransactional.isPending}
       />
 
       <OperationsTableCard

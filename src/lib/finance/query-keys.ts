@@ -1,1 +1,1 @@
-export { financeQueryKeys, type OperationsQueryType } from './queries/query-keys'
+export { financeQueryKeys } from './queries/query-keys'

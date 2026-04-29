@@ -13,7 +13,6 @@ import { Route as UsersRouteImport } from './routes/users'
 import { Route as RolesRouteImport } from './routes/roles'
 import { Route as OperationsRouteImport } from './routes/operations'
 import { Route as CurrenciesRouteImport } from './routes/currencies'
-import { Route as ConcurrencyRouteImport } from './routes/concurrency'
 import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -38,11 +37,6 @@ const CurrenciesRoute = CurrenciesRouteImport.update({
   path: '/currencies',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ConcurrencyRoute = ConcurrencyRouteImport.update({
-  id: '/concurrency',
-  path: '/concurrency',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AccountsRoute = AccountsRouteImport.update({
   id: '/accounts',
   path: '/accounts',
@@ -63,7 +57,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
-  '/concurrency': typeof ConcurrencyRoute
   '/currencies': typeof CurrenciesRoute
   '/operations': typeof OperationsRoute
   '/roles': typeof RolesRoute
@@ -73,7 +66,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
-  '/concurrency': typeof ConcurrencyRoute
   '/currencies': typeof CurrenciesRoute
   '/operations': typeof OperationsRoute
   '/roles': typeof RolesRoute
@@ -84,7 +76,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
-  '/concurrency': typeof ConcurrencyRoute
   '/currencies': typeof CurrenciesRoute
   '/operations': typeof OperationsRoute
   '/roles': typeof RolesRoute
@@ -96,7 +87,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/accounts'
-    | '/concurrency'
     | '/currencies'
     | '/operations'
     | '/roles'
@@ -106,7 +96,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/accounts'
-    | '/concurrency'
     | '/currencies'
     | '/operations'
     | '/roles'
@@ -116,7 +105,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/accounts'
-    | '/concurrency'
     | '/currencies'
     | '/operations'
     | '/roles'
@@ -127,7 +115,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AccountsRoute: typeof AccountsRoute
-  ConcurrencyRoute: typeof ConcurrencyRoute
   CurrenciesRoute: typeof CurrenciesRoute
   OperationsRoute: typeof OperationsRoute
   RolesRoute: typeof RolesRoute
@@ -164,13 +151,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CurrenciesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/concurrency': {
-      id: '/concurrency'
-      path: '/concurrency'
-      fullPath: '/concurrency'
-      preLoaderRoute: typeof ConcurrencyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/accounts': {
       id: '/accounts'
       path: '/accounts'
@@ -199,7 +179,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AccountsRoute: AccountsRoute,
-  ConcurrencyRoute: ConcurrencyRoute,
   CurrenciesRoute: CurrenciesRoute,
   OperationsRoute: OperationsRoute,
   RolesRoute: RolesRoute,

@@ -21,7 +21,7 @@ export function AccountsCreateCard({
       <CardContent>
         <form className="space-y-4" onSubmit={onApply}>
           <div className="space-y-2">
-            <Label htmlFor="accountUserId">userId</Label>
+            <Label htmlFor="accountUserId">ID пользователя</Label>
             <Input
               id="accountUserId"
               type="number"
@@ -36,7 +36,7 @@ export function AccountsCreateCard({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="accountCurrencyId">currencyId</Label>
+            <Label htmlFor="accountCurrencyId">ID валюты</Label>
             <Input
               id="accountCurrencyId"
               type="number"

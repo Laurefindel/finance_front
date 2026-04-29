@@ -10,7 +10,7 @@ function About() {
   return (
     <main className="page-wrap space-y-6 px-4 py-8">
       <PageHeaderSection
-        kicker="About"
+        kicker="О проекте"
         title="О проекте"
         description="Это frontend для Finance API на базе TanStack Start с использованием server functions, TanStack Query, TanStack Table, shadcn/ui и Tailwind CSS v4."
         titleClassName="sm:text-5xl"

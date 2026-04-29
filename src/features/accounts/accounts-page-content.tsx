@@ -1,5 +1,13 @@
 import { useMemo } from 'react'
 import { toast } from 'sonner'
+import { Button } from '#/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '#/components/ui/dialog'
 import { AccountsCreateCard } from '#/features/accounts/accounts-create-card'
 import { AccountsFiltersCard } from '#/features/accounts/accounts-filters-card'
 import { AccountsReplenishCard } from '#/features/accounts/accounts-replenish-card'
@@ -45,35 +53,39 @@ export function AccountsPageContent() {
   return (
     <main className="page-wrap space-y-6 px-4 py-8">
       <PageHeaderSection
-        kicker="Accounts"
+        kicker="Счета"
         title="Счета"
         description="Создание, фильтрация, синхронное и асинхронное пополнение, удаление счетов."
       />
 
-      <AccountsFiltersCard
-        value={model.filters.form}
-        onChange={model.filters.setForm}
-        onReset={model.filters.onReset}
-      />
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <AccountsCreateCard
-          value={model.create.form}
-          onChange={model.create.setForm}
-          onApply={model.create.onApply}
-          isPending={model.create.isPending}
-        />
-
-        <AccountsReplenishCard
-          value={model.replenish.form}
-          onChange={model.replenish.setForm}
-          onApply={model.replenish.onApply}
-          isPending={model.replenish.isPending}
-        />
+      <div className="flex flex-wrap gap-3">
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>Создать счет</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-xl">
+            <DialogHeader>
+              <DialogTitle>Новый счет</DialogTitle>
+            </DialogHeader>
+            <AccountsCreateCard
+              value={model.create.form}
+              onChange={model.create.setForm}
+              onApply={model.create.onApply}
+              isPending={model.create.isPending}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
+      <AccountsReplenishCard
+        value={model.replenish.form}
+        onChange={model.replenish.setForm}
+        onApply={model.replenish.onApply}
+        isPending={model.replenish.isPending}
+      />
+
       <section className="space-y-4">
-        <p className="island-kicker">Async Replenish</p>
+        <p className="island-kicker">Асинхронное пополнение</p>
         <h2 className="text-xl font-semibold text-(--sea-ink)">Асинхронное пополнение</h2>
 
         <AsyncReplenishStartCard
@@ -100,6 +112,12 @@ export function AccountsPageContent() {
           />
         </div>
       </section>
+
+      <AccountsFiltersCard
+        value={model.filters.form}
+        onChange={model.filters.setForm}
+        onReset={model.filters.onReset}
+      />
 
       <AccountsTableCard
         columns={columns}

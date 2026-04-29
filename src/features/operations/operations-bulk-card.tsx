@@ -23,7 +23,7 @@ export function OperationsBulkCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bulk операции</CardTitle>
+        <CardTitle>Массовые операции</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <Textarea
@@ -37,7 +37,7 @@ export function OperationsBulkCard({
             disabled={isTransactionalPending}
             onClick={onApplyTransactional}
           >
-            {isTransactionalPending ? 'Выполнение...' : 'Bulk transactional'}
+            {isTransactionalPending ? 'Выполнение...' : 'Запустить транзакционно'}
           </Button>
           <Button
             type="button"
@@ -47,7 +47,7 @@ export function OperationsBulkCard({
           >
             {isNonTransactionalPending
               ? 'Выполнение...'
-              : 'Bulk non-transactional'}
+              : 'Запустить без транзакции'}
           </Button>
         </div>
       </CardContent>

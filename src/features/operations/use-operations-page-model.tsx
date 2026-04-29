@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useMemo, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 import type {
@@ -7,11 +7,17 @@ import type {
   PaginationActionModel,
   TriggerActionModel,
 } from '#/features/shared/action-models'
-import { searchOperationsFn } from '#/lib/finance/finance.functions'
+import {
+  listAccountsFn,
+  listUsersFn,
+  searchOperationsFn,
+} from '#/lib/finance/finance.functions'
 import { getErrorMessage } from '#/lib/finance/errors/error-message'
 import { financeQueryKeys } from '#/lib/finance/queries/query-keys'
 import {
+  type AccountResponse,
   FinancialOperationRequestSchema,
+  type UserResponse,
 } from '#/lib/finance/schemas'
 import {
   defaultBulkOperationsPayload,
@@ -47,6 +53,11 @@ interface DeleteOperationAction {
   isPending: boolean
 }
 
+interface OperationPartyDetails {
+  account?: AccountResponse
+  user?: UserResponse
+}
+
 export function useOperationsPageModel(
   notifications?: OperationsPageModelNotifications,
 ) {
@@ -80,7 +91,6 @@ export function useOperationsPageModel(
     const sizeRaw = Number(activeFilters.size)
 
     return {
-      queryType: activeFilters.queryType,
       size: Number.isFinite(sizeRaw) && sizeRaw > 0 ? sizeRaw : 10,
       criteria: {
         senderUserId: parseOptionalNumber(activeFilters.senderUserId),
@@ -96,7 +106,6 @@ export function useOperationsPageModel(
 
   const operationsQuery = useQuery({
     queryKey: financeQueryKeys.operationsSearch({
-      queryType: normalizedFilters.queryType,
       page,
       size: normalizedFilters.size,
       ...normalizedFilters.criteria,
@@ -104,7 +113,6 @@ export function useOperationsPageModel(
     queryFn: () =>
       searchOperationsFn({
         data: {
-          queryType: normalizedFilters.queryType,
           page: page - 1,
           size: normalizedFilters.size,
           criteria: normalizedFilters.criteria,
@@ -112,7 +120,41 @@ export function useOperationsPageModel(
       }),
   })
 
-  const onFilterSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const accountsQuery = useQuery({
+    queryKey: financeQueryKeys.accounts({}),
+    queryFn: () => listAccountsFn({ data: {} }),
+  })
+
+  const usersQuery = useQuery({
+    queryKey: financeQueryKeys.users,
+    queryFn: () => listUsersFn(),
+  })
+
+  const accountsById = useMemo(() => {
+    const map = new Map<number, AccountResponse>()
+
+    for (const account of accountsQuery.data ?? []) {
+      if (typeof account.id === 'number') {
+        map.set(account.id, account)
+      }
+    }
+
+    return map
+  }, [accountsQuery.data])
+
+  const usersById = useMemo(() => {
+    const map = new Map<number, UserResponse>()
+
+    for (const user of usersQuery.data ?? []) {
+      if (typeof user.id === 'number') {
+        map.set(user.id, user)
+      }
+    }
+
+    return map
+  }, [usersQuery.data])
+
+  const onFilterSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault()
     setActiveFilters(filtersForm)
     setPage(1)
@@ -124,7 +166,9 @@ export function useOperationsPageModel(
     setPage(1)
   }
 
-  const onCreateSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const onCreateSubmit = async (
+    event: React.SyntheticEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault()
 
     const senderAccountId = Number(createForm.senderAccountId)
@@ -137,7 +181,9 @@ export function useOperationsPageModel(
       !Number.isFinite(receiverAccountId) ||
       receiverAccountId <= 0
     ) {
-      notifications?.onError?.('Укажите корректные senderAccountId и receiverAccountId')
+      notifications?.onError?.(
+        'Укажите корректные идентификаторы счета отправителя и получателя',
+      )
       return
     }
 
@@ -227,6 +273,24 @@ export function useOperationsPageModel(
     isPending: deleteMutation.isPending,
   }
 
+  const getPartyDetails = (accountId: number | undefined): OperationPartyDetails => {
+    if (typeof accountId !== 'number') {
+      return {}
+    }
+
+    const account = accountsById.get(accountId)
+    const accountUserId = account?.user?.id
+    const user =
+      typeof accountUserId === 'number'
+        ? usersById.get(accountUserId) ?? account.user
+        : account?.user
+
+    return {
+      account,
+      user,
+    }
+  }
+
   return {
     filters,
     create,
@@ -240,6 +304,7 @@ export function useOperationsPageModel(
       rows,
       rowsErrorMessage,
       pagination,
+      getPartyDetails,
     },
     remove,
   }

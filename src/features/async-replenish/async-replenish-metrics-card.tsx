@@ -25,10 +25,10 @@ export function AsyncReplenishMetricsCard({
           <p className="text-destructive">{errorMessage}</p>
         ) : (
           <>
-            <p>submitted: {submitted}</p>
-            <p>running: {running}</p>
-            <p>succeeded: {succeeded}</p>
-            <p>failed: {failed}</p>
+            <p>Поставлено в очередь: {submitted}</p>
+            <p>Выполняется: {running}</p>
+            <p>Успешно завершено: {succeeded}</p>
+            <p>Завершено с ошибкой: {failed}</p>
           </>
         )}
       </CardContent>

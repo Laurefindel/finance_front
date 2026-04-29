@@ -22,7 +22,7 @@ export function AccountsReplenishCard({
       <CardContent>
         <form className="space-y-4" onSubmit={onApply}>
           <div className="space-y-2">
-            <Label htmlFor="replenishId">accountId</Label>
+            <Label htmlFor="replenishId">ID счета</Label>
             <Input
               id="replenishId"
               value={value.id}
@@ -33,7 +33,7 @@ export function AccountsReplenishCard({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="replenishAmount">amount</Label>
+            <Label htmlFor="replenishAmount">Сумма пополнения</Label>
             <Input
               id="replenishAmount"
               type="number"

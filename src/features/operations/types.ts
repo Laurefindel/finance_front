@@ -1,5 +1,4 @@
 export interface OperationFilterState {
-  queryType: 'jpql' | 'criteria'
   senderUserId: string
   receiverUserId: string
   currencyCode: string
@@ -11,7 +10,6 @@ export interface OperationFilterState {
 }
 
 export const defaultOperationFilters: OperationFilterState = {
-  queryType: 'jpql',
   senderUserId: '',
   receiverUserId: '',
   currencyCode: '',
@@ -37,4 +35,4 @@ export const defaultOperationCreateForm: OperationCreateFormState = {
 }
 
 export const defaultBulkOperationsPayload =
-  '[\n  {"senderAccountId": 1, "receiverAccountId": 2, "amount": 25.5, "description": "Lunch"}\n]'
+  '[\n  {"senderAccountId": 1, "receiverAccountId": 2, "amount": 25.5, "description": "Обед"}\n]'
