@@ -1,12 +1,53 @@
 import { z } from 'zod'
 
+function isValidEmail(value: string) {
+  if (value.length > 254) {
+    return false
+  }
+
+  let atIndex = -1
+  for (let i = 0; i < value.length; i += 1) {
+    const char = value[i]
+    if (char === ' ') {
+      return false
+    }
+
+    if (char === '@') {
+      if (atIndex !== -1) {
+        return false
+      }
+
+      atIndex = i
+    }
+  }
+
+  if (atIndex <= 0 || atIndex >= value.length - 1) {
+    return false
+  }
+
+  const domain = value.slice(atIndex + 1)
+  if (!domain.includes('.')) {
+    return false
+  }
+
+  const labels = domain.split('.')
+  return labels.every((label) => label.length > 0)
+}
+
 export const UserRequestSchema = z.object({
   firstName: z.string().trim().min(1),
   lastName: z.string().trim().min(1),
   email: z
     .string()
     .trim()
-    .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Некорректный email'),
+    .superRefine((value, ctx) => {
+      if (!isValidEmail(value)) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'Некорректный email',
+        })
+      }
+    }),
   password: z.string().min(1),
 })
 

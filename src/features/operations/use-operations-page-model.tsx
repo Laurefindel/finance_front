@@ -278,10 +278,11 @@ export function useOperationsPageModel(
 
     const account = accountsById.get(accountId)
     const accountUserId = account?.user?.id
+    const fallbackUser = account?.user
     const user =
       typeof accountUserId === 'number'
-        ? usersById.get(accountUserId) ?? account.user
-        : account?.user
+        ? usersById.get(accountUserId) ?? fallbackUser
+        : fallbackUser
 
     return {
       account,
