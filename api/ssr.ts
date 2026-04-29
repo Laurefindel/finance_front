@@ -1,14 +1,4 @@
-type NodeReq = {
-  method?: string
-  url?: string
-  headers: Record<string, string | string[] | undefined>
-}
-
-type NodeRes = {
-  statusCode: number
-  setHeader: (name: string, value: string | string[]) => void
-  end: (body?: any) => void
-}
+import type { IncomingMessage, ServerResponse } from 'node:http'
 
 let cachedHandler:
   | ((request: Request, requestOpts?: unknown) => Promise<Response>)
@@ -18,7 +8,6 @@ async function getStartHandler() {
   if (cachedHandler) return cachedHandler
 
   // This folder is generated during `npm run build:vercel`
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error Generated at build time by scripts/vercel-prepare.mjs
   const mod = (await import('./_start/server.js')) as unknown as {
     default: {
@@ -31,7 +20,7 @@ async function getStartHandler() {
 }
 
 function getHeaderFirst(
-  headers: Record<string, string | string[] | undefined>,
+  headers: IncomingMessage['headers'],
   name: string,
 ): string | undefined {
   const value = headers[name]
@@ -39,7 +28,7 @@ function getHeaderFirst(
   return value
 }
 
-function toRequest(req: NodeReq): Request {
+function toRequest(req: IncomingMessage): Request {
   const method = req.method ?? 'GET'
   const pathnameAndQuery = req.url ?? '/'
 
@@ -70,27 +59,27 @@ function toRequest(req: NodeReq): Request {
   }
 
   if (method !== 'GET' && method !== 'HEAD') {
-    init.body = req as any
+    init.body = req as unknown as BodyInit
     init.duplex = 'half'
   }
 
   return new Request(url, init)
 }
 
-async function sendResponse(nodeRes: NodeRes, response: Response) {
-  nodeRes.statusCode = response.status
+async function sendResponse(res: ServerResponse, response: Response) {
+  res.statusCode = response.status
 
   response.headers.forEach((value, key) => {
     // NOTE: Set-Cookie may be collapsed by the Fetch Headers impl.
-    nodeRes.setHeader(key, value)
+    res.setHeader(key, value)
   })
 
   // We buffer to keep the bridge simple and avoid stream interop issues.
   const buf = Buffer.from(await response.arrayBuffer())
-  nodeRes.end(buf)
+  res.end(buf)
 }
 
-export default async function handler(req: NodeReq, res: NodeRes) {
+export default async function handler(req: IncomingMessage, res: ServerResponse) {
   const startFetch = await getStartHandler()
   const request = toRequest(req)
   const response = await startFetch(request)

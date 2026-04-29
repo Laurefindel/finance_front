@@ -12,6 +12,8 @@ export default defineConfig(
       'dist/**',
       'node_modules/**',
       '.tanstack/**',
+      'public/assets/**',
+      'api/_start/**',
       'src/routeTree.gen.ts',
     ],
   },
