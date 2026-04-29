@@ -11,7 +11,8 @@
   },
   "scripts": {
     "dev": "vite dev --port 3000",
-    "build": "vite build",
+    "build": "vite build && node ./scripts/vercel-prepare.mjs",
+    "build:vercel": "vite build && node ./scripts/vercel-prepare.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint .",
