@@ -21,10 +21,12 @@ async function getStartHandler() {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error Generated at build time by scripts/vercel-prepare.mjs
   const mod = (await import('./_start/server.js')) as unknown as {
-    default: (request: Request, requestOpts?: unknown) => Promise<Response>
+    default: {
+      fetch: (request: Request, requestOpts?: unknown) => Promise<Response>
+    }
   }
 
-  cachedHandler = mod.default
+  cachedHandler = mod.default.fetch
   return cachedHandler
 }
 
@@ -89,8 +91,8 @@ async function sendResponse(nodeRes: NodeRes, response: Response) {
 }
 
 export default async function handler(req: NodeReq, res: NodeRes) {
-  const startHandler = await getStartHandler()
+  const startFetch = await getStartHandler()
   const request = toRequest(req)
-  const response = await startHandler(request)
+  const response = await startFetch(request)
   await sendResponse(res, response)
 }
