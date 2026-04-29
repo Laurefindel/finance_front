@@ -3,6 +3,10 @@ import { z } from 'zod'
 import { financeRequest } from '../finance.server'
 import { RoleSchema, type Role } from '../schemas'
 
+const idSchema = z.object({
+  id: z.number().int().positive(),
+})
+
 const nameSchema = z.object({
   name: z.string().trim().min(1),
 })
@@ -42,23 +46,10 @@ export const getRoleByNameFn = createServerFn({ method: 'GET' })
   })
 
 export const deleteRoleFn = createServerFn({ method: 'POST' })
-  .inputValidator(nameSchema)
+  .inputValidator(idSchema)
   .handler(async ({ data }): Promise<{ success: true }> => {
-    const role = await financeRequest({
-      path: '/roles/by-name',
-      method: 'GET',
-      query: {
-        name: data.name,
-      },
-      schema: RoleSchema,
-    })
-
-    if (!role.id) {
-      throw new Error('Не удалось определить ID роли')
-    }
-
     await financeRequest({
-      path: `/roles/${role.id}`,
+      path: `/roles/${data.id}`,
       method: 'DELETE',
     })
 

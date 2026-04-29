@@ -3,10 +3,10 @@ import { DataTable } from '#/components/data/data-table'
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import { Skeleton } from '#/components/ui/skeleton'
 import type { TableCardProps } from '#/features/shared/contracts'
-import type { UserResponse } from '#/lib/finance/schemas'
+import type { UserTableRow } from './types'
 
-interface UsersTableCardProps extends TableCardProps<UserResponse> {
-  columns: Array<ColumnDef<UserResponse>>
+interface UsersTableCardProps extends TableCardProps<UserTableRow> {
+  columns: Array<ColumnDef<UserTableRow>>
   isInitialLoading: boolean
   isFatalError: boolean
   hasRefreshError: boolean

@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type {
   FormActionModel,
 } from '#/features/shared/action-models'
 import {
+  listAccountsFn,
   createUserFn,
   deleteUserFn,
   listUsersFn,
@@ -11,8 +12,13 @@ import {
 } from '#/lib/finance/finance.functions'
 import { getErrorMessage } from '#/lib/finance/errors/error-message'
 import { financeQueryKeys } from '#/lib/finance/queries/query-keys'
-import type { UserRequest, UserResponse } from '#/lib/finance/schemas'
-import { defaultUserFormState, type UserFormState } from './types'
+import type { AccountResponse, UserRequest, UserResponse } from '#/lib/finance/schemas'
+import {
+  defaultUserFormState,
+  type UserAccountSummary,
+  type UserFormState,
+  type UserTableRow,
+} from './types'
 
 function createDefaultUserForm(): UserFormState {
   return { ...defaultUserFormState }
@@ -24,6 +30,41 @@ function normalizeUser(user: UserResponse): UserResponse {
     accountsIds: user.accountsIds ?? [],
     roleIds: user.roleIds ?? [],
   }
+}
+
+function normalizeAccountSummary(account: AccountResponse): UserAccountSummary | null {
+  const accountId = account.id
+  const userId = account.user?.id
+
+  if (typeof accountId !== 'number' || typeof userId !== 'number') {
+    return null
+  }
+
+  return {
+    id: accountId,
+    balance: account.balance,
+    currencyCode: account.currency?.code?.trim().toUpperCase() || '---',
+    currencyName: account.currency?.name?.trim() || 'Без названия',
+  }
+}
+
+function buildAccountsByUser(accounts: AccountResponse[]) {
+  const byUserId = new Map<number, UserAccountSummary[]>()
+
+  accounts.forEach((account) => {
+    const userId = account.user?.id
+    const summary = normalizeAccountSummary(account)
+
+    if (typeof userId !== 'number' || !summary) {
+      return
+    }
+
+    const current = byUserId.get(userId) ?? []
+    current.push(summary)
+    byUserId.set(userId, current)
+  })
+
+  return byUserId
 }
 
 interface UsersPageModelNotifications {
@@ -58,6 +99,11 @@ export function useUsersPageModel(
   const usersQuery = useQuery({
     queryKey: financeQueryKeys.users,
     queryFn: () => listUsersFn(),
+  })
+
+  const accountsQuery = useQuery({
+    queryKey: financeQueryKeys.accounts({}),
+    queryFn: () => listAccountsFn({ data: {} }),
   })
 
   const createUserMutation = useMutation({
@@ -161,7 +207,25 @@ export function useUsersPageModel(
     }
   }
 
-  const rows = (usersQuery.data ?? []).map(normalizeUser)
+  const accountsByUser = useMemo(
+    () => buildAccountsByUser(accountsQuery.data ?? []),
+    [accountsQuery.data],
+  )
+
+  const rows: UserTableRow[] = useMemo(
+    () =>
+      (usersQuery.data ?? []).map((user) => {
+        const normalizedUser = normalizeUser(user)
+        const userId = normalizedUser.id
+
+        return {
+          ...normalizedUser,
+          accountsSummary:
+            typeof userId === 'number' ? (accountsByUser.get(userId) ?? []) : [],
+        }
+      }),
+    [usersQuery.data, accountsByUser],
+  )
   const rowsErrorMessage = usersQuery.error ? getErrorMessage(usersQuery.error) : null
   const hasRows = rows.length > 0
 

@@ -5,15 +5,11 @@ import type { FinancialOperationResponse } from '#/lib/finance/schemas'
 const MAX_VISIBLE_OPERATIONS = 5
 
 interface AccountsOperationsHoverProps {
-  accountId: number | undefined
-  incomingOperations: FinancialOperationResponse[]
-  outcomingOperations: FinancialOperationResponse[]
-}
-
-interface OperationsGroupProps {
+  triggerLabel: string
   title: string
   items: FinancialOperationResponse[]
   emptyText: string
+  ariaLabel?: string
 }
 
 function formatOperationAmount(operation: FinancialOperationResponse) {
@@ -35,11 +31,11 @@ function operationKey(operation: FinancialOperationResponse, index: number) {
   return `${operation.senderAccountId ?? 'na'}-${operation.receiverAccountId ?? 'na'}-${index}`
 }
 
-function OperationsGroup({
+function OperationsList({
   title,
   items,
   emptyText,
-}: Readonly<OperationsGroupProps>) {
+}: Readonly<Pick<AccountsOperationsHoverProps, 'title' | 'items' | 'emptyText'>>) {
   const visibleItems = items.slice(0, MAX_VISIBLE_OPERATIONS)
 
   return (
@@ -81,50 +77,35 @@ function OperationsGroup({
 }
 
 export function AccountsOperationsHover({
-  accountId,
-  incomingOperations,
-  outcomingOperations,
+  triggerLabel,
+  title,
+  items,
+  emptyText,
+  ariaLabel = 'Просмотреть операции по счету',
 }: Readonly<AccountsOperationsHoverProps>) {
-  if (typeof accountId !== 'number') {
-    return <span>-</span>
-  }
-
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <button
           type="button"
           className="inline-flex cursor-help items-center gap-1 rounded-md border border-transparent px-2 py-1 text-sm font-medium text-foreground transition-colors hover:border-border hover:bg-muted/60"
-          aria-label="Операции по счету"
+          aria-label={ariaLabel}
         >
-          <span>Операции</span>
+          <span>{triggerLabel}</span>
         </button>
       </TooltipTrigger>
       <TooltipContent
         side="top"
         sideOffset={8}
-        className="w-88 max-w-[calc(100vw-2rem)] rounded-xl p-3 text-left"
+        className="w-80 max-w-[calc(100vw-2rem)] rounded-xl p-3 text-left"
       >
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold">Операции по счету</p>
-            <div className="flex items-center gap-1">
-              <Badge variant="secondary">входящие: {incomingOperations.length}</Badge>
-              <Badge variant="secondary">исходящие: {outcomingOperations.length}</Badge>
-            </div>
+            <p className="text-xs font-semibold">{title}</p>
+            <Badge variant="secondary">всего: {items.length}</Badge>
           </div>
 
-          <OperationsGroup
-            title="Входящие операции"
-            items={incomingOperations}
-            emptyText="Входящих операций пока нет"
-          />
-
-          <OperationsGroup
-            title="Исходящие операции"
-            items={outcomingOperations}
-            emptyText="Исходящих операций пока нет"
-          />
+          <OperationsList title={title} items={items} emptyText={emptyText} />
         </div>
       </TooltipContent>
     </Tooltip>

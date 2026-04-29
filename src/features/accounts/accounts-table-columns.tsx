@@ -1,6 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import { ConfirmDialogButton } from '#/components/ui/confirm-dialog-button'
 import type { AccountResponse } from '#/lib/finance/schemas'
+import { AccountsCurrencyHover } from './accounts-currency-hover'
 import { AccountsOperationsHover } from './accounts-operations-hover'
 
 interface AccountsTableColumnsOptions {
@@ -36,28 +37,39 @@ export function createAccountsTableColumns({
     {
       id: 'currency',
       header: 'Валюта',
-      cell: ({ row }) => row.original.currency?.code ?? '-',
-    },
-    {
-      id: 'operations',
-      header: 'Операции',
-      cell: ({ row }) => (
-        <AccountsOperationsHover
-          accountId={row.original.id}
-          incomingOperations={row.original.incomingOperations ?? []}
-          outcomingOperations={row.original.outcomingOperations ?? []}
-        />
-      ),
+      cell: ({ row }) => <AccountsCurrencyHover currency={row.original.currency} />,
     },
     {
       id: 'incoming',
       header: 'Входящие',
-      cell: ({ row }) => row.original.incomingOperations?.length ?? 0,
+      cell: ({ row }) => {
+        const incoming = row.original.incomingOperations ?? []
+        return (
+          <AccountsOperationsHover
+            triggerLabel={String(incoming.length)}
+            title="Входящие операции"
+            items={incoming}
+            emptyText="Входящих операций пока нет"
+            ariaLabel="Показать входящие операции"
+          />
+        )
+      },
     },
     {
       id: 'outcoming',
       header: 'Исходящие',
-      cell: ({ row }) => row.original.outcomingOperations?.length ?? 0,
+      cell: ({ row }) => {
+        const outcoming = row.original.outcomingOperations ?? []
+        return (
+          <AccountsOperationsHover
+            triggerLabel={String(outcoming.length)}
+            title="Исходящие операции"
+            items={outcoming}
+            emptyText="Исходящих операций пока нет"
+            ariaLabel="Показать исходящие операции"
+          />
+        )
+      },
     },
     {
       id: 'actions',

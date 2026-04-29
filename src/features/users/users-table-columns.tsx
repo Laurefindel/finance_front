@@ -1,8 +1,8 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '#/components/ui/badge'
 import { ConfirmDialogButton } from '#/components/ui/confirm-dialog-button'
-import type { UserResponse } from '#/lib/finance/schemas'
 import { UsersAccountsHover } from './users-accounts-hover'
+import type { UserTableRow } from './types'
 import { UsersUpdateDialogButton } from './users-update-dialog-button'
 
 interface CreateUsersTableColumnsOptions {
@@ -25,7 +25,7 @@ export function createUsersTableColumns({
   isUpdatePending,
   onDelete,
   onUpdate,
-}: CreateUsersTableColumnsOptions): Array<ColumnDef<UserResponse>> {
+}: CreateUsersTableColumnsOptions): Array<ColumnDef<UserTableRow>> {
   return [
     {
       accessorKey: 'firstName',
@@ -34,6 +34,7 @@ export function createUsersTableColumns({
         <UsersAccountsHover
           user={row.original}
           triggerLabel={row.original.firstName ?? '-'}
+          accountsSummary={row.original.accountsSummary}
         />
       ),
     },
@@ -55,7 +56,8 @@ export function createUsersTableColumns({
     {
       id: 'accounts',
       header: 'Счета',
-      cell: ({ row }) => row.original.accountsIds?.length ?? 0,
+      cell: ({ row }) =>
+        row.original.accountsSummary.length || row.original.accountsIds?.length || 0,
     },
     {
       id: 'actions',

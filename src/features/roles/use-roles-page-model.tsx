@@ -24,7 +24,7 @@ interface RolesPageModelNotifications {
 }
 
 interface DeleteRoleAction {
-  onDelete: (name: string) => Promise<void>
+  onDelete: (id: number) => Promise<void>
   isPending: boolean
 }
 
@@ -52,9 +52,13 @@ export function useRolesPageModel(
   })
 
   const deleteRoleMutation = useMutation({
-    mutationFn: (name: string) => deleteRoleFn({ data: { name } }),
-    onSuccess: async () => {
+    mutationFn: (id: number) => deleteRoleFn({ data: { id } }),
+    onSuccess: async (_, deletedId) => {
       notifications?.onSuccess?.('Роль удалена')
+      queryClient.setQueryData<Role[]>(
+        financeQueryKeys.roles,
+        (previous = []) => previous.filter((item) => item.id !== deletedId),
+      )
       await queryClient.invalidateQueries({ queryKey: financeQueryKeys.roles })
     },
     onError: (error) => {
@@ -72,9 +76,9 @@ export function useRolesPageModel(
     }
   }
 
-  const onDelete = async (name: string) => {
+  const onDelete = async (id: number) => {
     try {
-      await deleteRoleMutation.mutateAsync(name)
+      await deleteRoleMutation.mutateAsync(id)
     } catch {
       // onError already reports the issue.
     }
