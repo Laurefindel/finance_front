@@ -19,7 +19,6 @@ const appLinks = [
   { to: '/currencies', label: 'Валюты' },
   { to: '/accounts', label: 'Счета' },
   { to: '/operations', label: 'Операции' },
-  { to: '/about', label: 'О проекте' },
 ] as const
 
 const desktopNavListClassName =

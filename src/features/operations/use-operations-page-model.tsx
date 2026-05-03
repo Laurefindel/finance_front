@@ -20,9 +20,11 @@ import {
   type UserResponse,
 } from '#/lib/finance/schemas'
 import {
-  defaultBulkOperationsPayload,
+  createBulkOperationItem,
+  defaultBulkOperationsForm,
   defaultOperationCreateForm,
   defaultOperationFilters,
+  type BulkOperationsFormState,
   type OperationCreateFormState,
   type OperationFilterState,
 } from './types'
@@ -37,6 +39,13 @@ function createDefaultFilters(): OperationFilterState {
 
 function createDefaultOperationForm(): OperationCreateFormState {
   return { ...defaultOperationCreateForm }
+}
+
+function createDefaultBulkForm(): BulkOperationsFormState {
+  return {
+    ...defaultBulkOperationsForm,
+    items: [createBulkOperationItem()],
+  }
 }
 
 function parseOptionalNumber(value: string) {
@@ -72,13 +81,14 @@ export function useOperationsPageModel(
   const [createForm, setCreateForm] =
     useState<OperationCreateFormState>(createDefaultOperationForm)
 
-  const [bulkPayload, setBulkPayload] = useState(defaultBulkOperationsPayload)
+  const [bulkForm, setBulkForm] = useState<BulkOperationsFormState>(
+    createDefaultBulkForm,
+  )
 
   const {
     createMutation,
     deleteMutation,
     bulkMutation,
-    bulkNoTxMutation,
   } = useOperationsPageModelMutations({
     queryClient,
     notifications,
@@ -202,16 +212,49 @@ export function useOperationsPageModel(
     }
   }
 
-  const executeBulk = async (mode: 'tx' | 'no-tx') => {
+  const executeBulk = async () => {
     try {
-      const parsed = JSON.parse(bulkPayload)
-      const payload = z.array(FinancialOperationRequestSchema).parse(parsed)
+      const senderUserId = Number(bulkForm.senderUserId)
+      const senderAccountId = Number(bulkForm.senderAccountId)
 
-      if (mode === 'tx') {
-        await bulkMutation.mutateAsync(payload)
-      } else {
-        await bulkNoTxMutation.mutateAsync(payload)
+      if (!Number.isFinite(senderUserId) || senderUserId <= 0) {
+        notifications?.onError?.('Выберите отправителя')
+        return
       }
+
+      if (!Number.isFinite(senderAccountId) || senderAccountId <= 0) {
+        notifications?.onError?.('Выберите корректный счет отправителя')
+        return
+      }
+
+      if (!bulkForm.items.length) {
+        notifications?.onError?.('Добавьте хотя бы одну операцию')
+        return
+      }
+
+      if (
+        bulkForm.items.some(
+          (item) =>
+            item.receiverAccountId.trim().length === 0 ||
+            item.amount.trim().length === 0,
+        )
+      ) {
+        notifications?.onError?.(
+          'Заполните получателя и сумму для каждой операции',
+        )
+        return
+      }
+
+      const prepared = bulkForm.items.map((item) => ({
+        senderAccountId,
+        receiverAccountId: Number(item.receiverAccountId),
+        amount: Number(item.amount),
+        description: item.description.trim() || undefined,
+      }))
+
+      const payload = z.array(FinancialOperationRequestSchema).parse(prepared)
+      await bulkMutation.mutateAsync(payload)
+      setBulkForm(createDefaultBulkForm())
     } catch (error) {
       notifications?.onError?.(getErrorMessage(error))
     }
@@ -242,14 +285,9 @@ export function useOperationsPageModel(
     isPending: createMutation.isPending,
   }
 
-  const transactional: TriggerActionModel = {
-    onApply: () => executeBulk('tx'),
+  const bulk: TriggerActionModel = {
+    onApply: executeBulk,
     isPending: bulkMutation.isPending,
-  }
-
-  const nonTransactional: TriggerActionModel = {
-    onApply: () => executeBulk('no-tx'),
-    isPending: bulkNoTxMutation.isPending,
   }
 
   const pagination: PaginationActionModel = {
@@ -298,10 +336,9 @@ export function useOperationsPageModel(
       users: usersQuery.data ?? [],
     },
     bulk: {
-      payload: bulkPayload,
-      setPayload: setBulkPayload,
-      transactional,
-      nonTransactional,
+      form: bulkForm,
+      setForm: setBulkForm,
+      action: bulk,
     },
     table: {
       rows,

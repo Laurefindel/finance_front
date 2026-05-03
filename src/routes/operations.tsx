@@ -72,17 +72,17 @@ function OperationsPage() {
           <DialogTrigger asChild>
             <Button variant="outline">Массовое создание</Button>
           </DialogTrigger>
-          <DialogContent className="max-w-3xl">
+          <DialogContent className="max-h-[85vh] max-w-3xl overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Массовое создание операций</DialogTitle>
             </DialogHeader>
             <OperationsBulkCard
-              value={model.bulk.payload}
-              onChange={model.bulk.setPayload}
-              onApplyTransactional={model.bulk.transactional.onApply}
-              onApplyNonTransactional={model.bulk.nonTransactional.onApply}
-              isTransactionalPending={model.bulk.transactional.isPending}
-              isNonTransactionalPending={model.bulk.nonTransactional.isPending}
+              value={model.bulk.form}
+              onChange={model.bulk.setForm}
+              onApply={model.bulk.action.onApply}
+              isPending={model.bulk.action.isPending}
+              accounts={model.lookups.accounts}
+              users={model.lookups.users}
             />
           </DialogContent>
         </Dialog>

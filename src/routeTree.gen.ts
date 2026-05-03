@@ -14,7 +14,6 @@ import { Route as RolesRouteImport } from './routes/roles'
 import { Route as OperationsRouteImport } from './routes/operations'
 import { Route as CurrenciesRouteImport } from './routes/currencies'
 import { Route as AccountsRouteImport } from './routes/accounts'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
 const UsersRoute = UsersRouteImport.update({
@@ -42,11 +41,6 @@ const AccountsRoute = AccountsRouteImport.update({
   path: '/accounts',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -55,7 +49,6 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
   '/currencies': typeof CurrenciesRoute
   '/operations': typeof OperationsRoute
@@ -64,7 +57,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
   '/currencies': typeof CurrenciesRoute
   '/operations': typeof OperationsRoute
@@ -74,7 +66,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/accounts': typeof AccountsRoute
   '/currencies': typeof CurrenciesRoute
   '/operations': typeof OperationsRoute
@@ -85,25 +76,16 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
     | '/accounts'
     | '/currencies'
     | '/operations'
     | '/roles'
     | '/users'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/about'
-    | '/accounts'
-    | '/currencies'
-    | '/operations'
-    | '/roles'
-    | '/users'
+  to: '/' | '/accounts' | '/currencies' | '/operations' | '/roles' | '/users'
   id:
     | '__root__'
     | '/'
-    | '/about'
     | '/accounts'
     | '/currencies'
     | '/operations'
@@ -113,7 +95,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
   AccountsRoute: typeof AccountsRoute
   CurrenciesRoute: typeof CurrenciesRoute
   OperationsRoute: typeof OperationsRoute
@@ -158,13 +139,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -177,7 +151,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
   AccountsRoute: AccountsRoute,
   CurrenciesRoute: CurrenciesRoute,
   OperationsRoute: OperationsRoute,

@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { DashboardHeroSection } from '#/features/dashboard/dashboard-hero-section'
-import { DashboardModulesCard } from '#/features/dashboard/dashboard-modules-card'
 import { DashboardStatsSection } from '#/features/dashboard/dashboard-stats-section'
 import { useDashboardPageModel } from '#/features/dashboard/use-dashboard-page-model'
 
@@ -14,8 +13,6 @@ function DashboardPage() {
       <DashboardHeroSection />
 
       <DashboardStatsSection cards={model.cards} />
-
-      <DashboardModulesCard />
     </main>
   )
 }

@@ -20,7 +20,12 @@ export function DashboardStatsSection({ cards }: DashboardStatsSectionProps) {
           </p>
           <p className="mt-2 text-3xl font-bold text-(--sea-ink)">{card.value}</p>
           <p className="mt-2 text-sm text-(--sea-ink-soft)">{card.description}</p>
-          <Button asChild size="sm" variant="outline" className="mt-4">
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="mt-4 border-(--chip-line) bg-(--surface-strong) text-(--sea-ink) hover:bg-(--link-bg-hover)"
+          >
             <Link to={card.to}>Перейти</Link>
           </Button>
         </article>

@@ -70,7 +70,11 @@ export function UsersUpdateDialogButton({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" disabled={!id || isPending}>
+        <Button
+          variant="outline"
+          className="border-(--chip-line) bg-(--surface-strong) text-(--sea-ink) hover:bg-(--link-bg-hover)"
+          disabled={!id || isPending}
+        >
           Изменить
         </Button>
       </DialogTrigger>

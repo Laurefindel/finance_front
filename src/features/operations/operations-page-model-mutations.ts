@@ -1,7 +1,6 @@
 import { useMutation, type QueryClient } from '@tanstack/react-query'
 import {
   createBulkOperationsFn,
-  createBulkOperationsNoTxFn,
   createOperationFn,
   deleteOperationFn,
 } from '#/lib/finance/finance.functions'
@@ -57,21 +56,7 @@ export function useOperationsPageModelMutations({
     mutationFn: (payload: FinancialOperationRequest[]) =>
       createBulkOperationsFn({ data: payload }),
     onSuccess: async () => {
-      notifications?.onSuccess?.('Массовые операции созданы (транзакционный режим)')
-      await invalidateOperationsAndAccounts(queryClient)
-    },
-    onError: (error) => {
-      notifications?.onError?.(getErrorMessage(error))
-    },
-  })
-
-  const bulkNoTxMutation = useMutation({
-    mutationFn: (payload: FinancialOperationRequest[]) =>
-      createBulkOperationsNoTxFn({ data: payload }),
-    onSuccess: async () => {
-      notifications?.onSuccess?.(
-        'Массовые операции созданы (без транзакционного режима)',
-      )
+      notifications?.onSuccess?.('Массовые операции созданы')
       await invalidateOperationsAndAccounts(queryClient)
     },
     onError: (error) => {
@@ -83,6 +68,5 @@ export function useOperationsPageModelMutations({
     createMutation,
     deleteMutation,
     bulkMutation,
-    bulkNoTxMutation,
   }
 }

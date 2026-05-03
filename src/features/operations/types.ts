@@ -34,5 +34,30 @@ export const defaultOperationCreateForm: OperationCreateFormState = {
   description: '',
 }
 
-export const defaultBulkOperationsPayload =
-  '[\n  {"senderAccountId": 1, "receiverAccountId": 2, "amount": 25.5, "description": "Обед"}\n]'
+export interface BulkOperationItemState {
+  id: string
+  receiverAccountId: string
+  amount: string
+  description: string
+}
+
+export interface BulkOperationsFormState {
+  senderUserId: string
+  senderAccountId: string
+  items: BulkOperationItemState[]
+}
+
+export function createBulkOperationItem(): BulkOperationItemState {
+  return {
+    id: `bulk-${Math.random().toString(36).slice(2, 10)}`,
+    receiverAccountId: '',
+    amount: '',
+    description: '',
+  }
+}
+
+export const defaultBulkOperationsForm: BulkOperationsFormState = {
+  senderUserId: '',
+  senderAccountId: '',
+  items: [createBulkOperationItem()],
+}
