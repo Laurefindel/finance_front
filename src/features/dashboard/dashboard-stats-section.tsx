@@ -3,7 +3,7 @@ import { Button } from '#/components/ui/button'
 import type { DashboardStatCard } from './types'
 
 interface DashboardStatsSectionProps {
-  cards: DashboardStatCard[]
+  readonly cards: readonly DashboardStatCard[]
 }
 
 export function DashboardStatsSection({ cards }: DashboardStatsSectionProps) {
