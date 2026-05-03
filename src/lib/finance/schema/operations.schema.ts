@@ -29,8 +29,8 @@ export const FinancialOperationSearchCriteriaSchema = z.object({
   currencyCode: z.string().trim().max(3).optional(),
   minAmount: nonNegativeNumberSchema.optional(),
   maxAmount: nonNegativeNumberSchema.optional(),
-  fromDate: z.string().datetime().optional(),
-  toDate: z.string().datetime().optional(),
+  fromDate: z.string().pipe(z.coerce.date()).optional(),
+  toDate: z.string().pipe(z.coerce.date()).optional(),
 })
 
 export const PageableSchema = z.object({

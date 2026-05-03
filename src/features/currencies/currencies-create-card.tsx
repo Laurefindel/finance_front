@@ -6,19 +6,19 @@ import type { FormCardProps } from '#/features/shared/contracts'
 import type { CreateCurrencyFormState } from './types'
 
 interface CurrenciesCreateCardProps
-  extends FormCardProps<CreateCurrencyFormState> {}
+  extends Readonly<FormCardProps<CreateCurrencyFormState>> {}
 
-export function CurrenciesCreateCard({
-  value,
-  onChange,
-  onApply,
-  isPending,
-}: CurrenciesCreateCardProps) {
+export function CurrenciesCreateCard(
+  props: Readonly<CurrenciesCreateCardProps>,
+) {
+  const { value, onChange, onApply, isPending } = props
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Создать валюту</CardTitle>
       </CardHeader>
+
       <CardContent>
         <form className="space-y-4" onSubmit={onApply}>
           <div className="space-y-2">
@@ -33,6 +33,7 @@ export function CurrenciesCreateCard({
               required
             />
           </div>
+
           <div className="space-y-2">
             <Label htmlFor="currencyName">Название</Label>
             <Input
@@ -44,6 +45,7 @@ export function CurrenciesCreateCard({
               required
             />
           </div>
+
           <Button type="submit" disabled={isPending}>
             {isPending ? 'Сохранение...' : 'Создать'}
           </Button>

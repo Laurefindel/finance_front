@@ -49,7 +49,7 @@ export interface BulkOperationsFormState {
 
 export function createBulkOperationItem(): BulkOperationItemState {
   return {
-    id: `bulk-${Math.random().toString(36).slice(2, 10)}`,
+    id: `bulk-${crypto.randomUUID()}`,
     receiverAccountId: '',
     amount: '',
     description: '',

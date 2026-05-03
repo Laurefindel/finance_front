@@ -1,20 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 
 interface AsyncReplenishMetricsCardProps {
-  submitted: number
-  running: number
-  succeeded: number
-  failed: number
-  errorMessage: string | null
+  readonly submitted: number
+  readonly running: number
+  readonly succeeded: number
+  readonly failed: number
+  readonly errorMessage: string | null
 }
 
-export function AsyncReplenishMetricsCard({
-  submitted,
-  running,
-  succeeded,
-  failed,
-  errorMessage,
-}: AsyncReplenishMetricsCardProps) {
+export function AsyncReplenishMetricsCard(
+  props: Readonly<AsyncReplenishMetricsCardProps>,
+) {
+  const { submitted, running, succeeded, failed, errorMessage } = props
+
   return (
     <Card>
       <CardHeader>

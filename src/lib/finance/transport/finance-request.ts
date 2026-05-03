@@ -15,7 +15,7 @@ export async function financeRequest(
 ): Promise<unknown>
 export async function financeRequest<T>(
   options: FinanceRequestOptions<T>,
-): Promise<T | unknown> {
+): Promise<unknown> {
   const { path, method = 'GET', query, body } = options
   const schema = 'schema' in options ? options.schema : undefined
 

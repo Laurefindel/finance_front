@@ -1,17 +1,17 @@
 import type { ColumnDef } from '@tanstack/react-table'
-import type { Dispatch, FormEvent, SetStateAction } from 'react'
+import type { Dispatch, SetStateAction, SubmitEvent } from 'react'
 
 export interface FormActionModel<TFormState> {
   form: TFormState
   setForm: Dispatch<SetStateAction<TFormState>>
-  onApply: (event: FormEvent<HTMLFormElement>) => void
+  onApply: (event: SubmitEvent<HTMLFormElement>) => void
   isPending: boolean
 }
 
 export interface FiltersActionModel<TFiltersState> {
   form: TFiltersState
   setForm: Dispatch<SetStateAction<TFiltersState>>
-  onApply: (event: FormEvent<HTMLFormElement>) => void
+  onApply: (event: SubmitEvent<HTMLFormElement>) => void
   onReset: () => void
 }
 

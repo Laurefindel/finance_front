@@ -4,15 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
 import type { TableCardProps } from '#/features/shared/contracts'
 import type { AccountResponse } from '#/lib/finance/schemas'
 
-interface AccountsTableCardProps extends TableCardProps<AccountResponse> {
-  columns: Array<ColumnDef<AccountResponse>>
+interface AccountsTableCardProps
+  extends Readonly<TableCardProps<AccountResponse>> {
+  readonly columns: ColumnDef<AccountResponse>[] 
 }
 
-export function AccountsTableCard({
-  columns,
-  data,
-  errorMessage,
-}: AccountsTableCardProps) {
+export function AccountsTableCard(
+  props: Readonly<AccountsTableCardProps>,
+) {
+  const { columns, data, errorMessage } = props
+
   return (
     <Card>
       <CardHeader>

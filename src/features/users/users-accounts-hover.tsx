@@ -21,13 +21,55 @@ function formatBalance(value: number | undefined) {
   })
 }
 
-export function UsersAccountsHover({
-  user,
-  triggerLabel,
-  accountsSummary,
-}: UsersAccountsHoverProps) {
+export function UsersAccountsHover(
+  props: Readonly<UsersAccountsHoverProps>,
+) {
+  const { user, triggerLabel, accountsSummary } = props
+
   const accountsIds = user.accountsIds ?? []
   const totalAccounts = accountsSummary.length || accountsIds.length
+
+  const hasFullSummary = accountsSummary.length > 0
+  const hasIdsOnly = accountsIds.length > 0
+
+  let accountsContent: React.ReactNode
+
+  if (hasFullSummary) {
+    accountsContent = (
+      <ul className="space-y-1.5">
+        {accountsSummary.slice(0, MAX_VISIBLE_ACCOUNTS).map((account) => (
+          <li
+            key={account.id}
+            className="rounded-md border border-background/20 bg-background/5 px-2 py-1"
+          >
+            <p className="text-[11px] font-medium text-background">
+              Счет #{account.id} · {account.currencyCode}
+            </p>
+            <p className="text-[10px] text-background/75">
+              {formatBalance(account.balance)} · {account.currencyName}
+            </p>
+          </li>
+        ))}
+      </ul>
+    )
+  } else if (hasIdsOnly) {
+    accountsContent = (
+      <p className="text-[11px] text-background/80">
+        Счета: {accountsIds.join(', ')}
+      </p>
+    )
+  } else {
+    accountsContent = (
+      <p className="text-[11px] text-background/80">
+        У пользователя пока нет счетов
+      </p>
+    )
+  }
+
+  const extraAccounts =
+    accountsSummary.length > MAX_VISIBLE_ACCOUNTS
+      ? accountsSummary.length - MAX_VISIBLE_ACCOUNTS
+      : null
 
   return (
     <Tooltip>
@@ -40,6 +82,7 @@ export function UsersAccountsHover({
           {triggerLabel}
         </button>
       </TooltipTrigger>
+
       <TooltipContent
         side="top"
         sideOffset={8}
@@ -51,35 +94,11 @@ export function UsersAccountsHover({
             <Badge variant="secondary">счетов: {totalAccounts}</Badge>
           </div>
 
-          {accountsSummary.length ? (
-            <ul className="space-y-1.5">
-              {accountsSummary.slice(0, MAX_VISIBLE_ACCOUNTS).map((account) => (
-                <li
-                  key={account.id}
-                  className="rounded-md border border-background/20 bg-background/5 px-2 py-1"
-                >
-                  <p className="text-[11px] font-medium text-background">
-                    Счет #{account.id} · {account.currencyCode}
-                  </p>
-                  <p className="text-[10px] text-background/75">
-                    {formatBalance(account.balance)} · {account.currencyName}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : accountsIds.length ? (
-            <p className="text-[11px] text-background/80">
-              Счета: {accountsIds.join(', ')}
-            </p>
-          ) : (
-            <p className="text-[11px] text-background/80">
-              У пользователя пока нет счетов
-            </p>
-          )}
+          {accountsContent}
 
-          {accountsSummary.length > MAX_VISIBLE_ACCOUNTS ? (
+          {extraAccounts ? (
             <p className="text-[10px] text-background/70">
-              И еще {accountsSummary.length - MAX_VISIBLE_ACCOUNTS}
+              И еще {extraAccounts}
             </p>
           ) : null}
         </div>

@@ -1,10 +1,10 @@
 import type { ColumnDef } from '@tanstack/react-table'
-import type { Dispatch, FormEvent, SetStateAction } from 'react'
+import type { Dispatch, SetStateAction } from 'react'
 
 export interface FormCardProps<TFormState> {
   value: TFormState
   onChange: Dispatch<SetStateAction<TFormState>>
-  onApply: (event: FormEvent<HTMLFormElement>) => void
+  onApply: (event: React.SubmitEvent<HTMLFormElement>) => void
   isPending: boolean
 }
 

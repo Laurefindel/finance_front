@@ -4,6 +4,7 @@ import type {
   FormActionModel,
   TableViewModel,
 } from '#/features/shared/action-models'
+import type { ColumnDef } from '@tanstack/react-table'
 import {
   createRoleFn,
   deleteRoleFn,
@@ -91,7 +92,15 @@ export function useRolesPageModel(
     isPending: createRoleMutation.isPending,
   }
 
+  const columns: ColumnDef<Role>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Name',
+    },
+  ]
+
   const table: TableViewModel<Role> = {
+    columns,
     rows: rolesQuery.data ?? [],
     rowsErrorMessage: rolesQuery.error ? getErrorMessage(rolesQuery.error) : null,
   }

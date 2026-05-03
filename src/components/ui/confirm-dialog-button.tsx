@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Button, type ButtonProps } from '#/components/ui/button'
+import { Button } from '#/components/ui/button'
+import type { ComponentProps } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -10,17 +11,19 @@ import {
   DialogTrigger,
 } from '#/components/ui/dialog'
 
+type ButtonProps = ComponentProps<typeof Button>
+
 interface ConfirmDialogButtonProps {
-  triggerLabel: string
-  title: string
-  description: string
-  confirmLabel?: string
-  cancelLabel?: string
-  onConfirm: () => Promise<void> | void
-  disabled?: boolean
-  isPending?: boolean
-  triggerVariant?: ButtonProps['variant']
-  triggerSize?: ButtonProps['size']
+  readonly triggerLabel: string
+  readonly title: string
+  readonly description: string
+  readonly confirmLabel?: string
+  readonly cancelLabel?: string
+  readonly onConfirm: () => Promise<void> | void
+  readonly disabled?: boolean
+  readonly isPending?: boolean
+  readonly triggerVariant?: ButtonProps['variant']
+  readonly triggerSize?: ButtonProps['size']
 }
 
 export function ConfirmDialogButton({

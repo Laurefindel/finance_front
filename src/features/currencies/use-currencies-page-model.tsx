@@ -1,5 +1,6 @@
 import { useState, type SyntheticEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { ColumnDef } from '@tanstack/react-table'
 import type {
   FormActionModel,
   TableViewModel,
@@ -162,7 +163,19 @@ export function useCurrenciesPageModel(
     isPending: updateMutation.isPending,
   }
 
+  const columns: Array<ColumnDef<CurrencyResponse>> = [
+    {
+      accessorKey: 'code',
+      header: 'Code',
+    },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+    },
+  ]
+
   const table: TableViewModel<CurrencyResponse> = {
+    columns,
     rows: currenciesQuery.data ?? [],
     rowsErrorMessage: currenciesQuery.error ? getErrorMessage(currenciesQuery.error) : null,
   }

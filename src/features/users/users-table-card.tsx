@@ -5,45 +5,72 @@ import { Skeleton } from '#/components/ui/skeleton'
 import type { TableCardProps } from '#/features/shared/contracts'
 import type { UserTableRow } from './types'
 
-interface UsersTableCardProps extends TableCardProps<UserTableRow> {
-  columns: Array<ColumnDef<UserTableRow>>
-  isInitialLoading: boolean
-  isFatalError: boolean
-  hasRefreshError: boolean
+interface UsersTableCardProps
+  extends Readonly<TableCardProps<UserTableRow>> {
+  readonly columns: ColumnDef<UserTableRow>[]
+  readonly isInitialLoading: boolean
+  readonly isFatalError: boolean
+  readonly hasRefreshError: boolean
 }
 
-export function UsersTableCard({
-  columns,
-  data,
-  errorMessage,
-  isInitialLoading,
-  isFatalError,
-  hasRefreshError,
-}: UsersTableCardProps) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Список пользователей</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {isInitialLoading ? (
+export function UsersTableCard(
+  props: Readonly<UsersTableCardProps>,
+) {
+  const {
+    columns,
+    data,
+    errorMessage,
+    isInitialLoading,
+    isFatalError,
+    hasRefreshError,
+  } = props
+
+  if (isInitialLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Список пользователей</CardTitle>
+        </CardHeader>
+        <CardContent>
           <div className="space-y-2">
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-10 w-full" />
           </div>
-        ) : isFatalError ? (
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (isFatalError) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Список пользователей</CardTitle>
+        </CardHeader>
+        <CardContent>
           <p className="text-sm text-destructive">{errorMessage}</p>
-        ) : (
-          <div className="space-y-3">
-            {hasRefreshError ? (
-              <p className="text-xs text-destructive">
-                Не удалось обновить список с сервера: {errorMessage}
-              </p>
-            ) : null}
-            <DataTable columns={columns} data={data} />
-          </div>
-        )}
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Список пользователей</CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <div className="space-y-3">
+          {hasRefreshError ? (
+            <p className="text-xs text-destructive">
+              Не удалось обновить список с сервера: {errorMessage}
+            </p>
+          ) : null}
+
+          <DataTable columns={columns} data={data} />
+        </div>
       </CardContent>
     </Card>
   )

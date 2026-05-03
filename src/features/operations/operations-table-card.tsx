@@ -6,32 +6,37 @@ import type { TableCardProps } from '#/features/shared/contracts'
 import type { FinancialOperationResponse } from '#/lib/finance/schemas'
 
 interface OperationsTableCardProps
-  extends TableCardProps<FinancialOperationResponse> {
-  columns: Array<ColumnDef<FinancialOperationResponse>>
-  currentPage: number
-  totalPages: number
-  canPrev: boolean
-  canNext: boolean
-  onPrev: () => void
-  onNext: () => void
+  extends Readonly<TableCardProps<FinancialOperationResponse>> {
+  readonly columns: ColumnDef<FinancialOperationResponse>[]
+  readonly currentPage: number
+  readonly totalPages: number
+  readonly canPrev: boolean
+  readonly canNext: boolean
+  readonly onPrev: () => void
+  readonly onNext: () => void
 }
 
-export function OperationsTableCard({
-  columns,
-  data,
-  errorMessage,
-  currentPage,
-  totalPages,
-  canPrev,
-  canNext,
-  onPrev,
-  onNext,
-}: OperationsTableCardProps) {
+export function OperationsTableCard(
+  props: Readonly<OperationsTableCardProps>,
+) {
+  const {
+    columns,
+    data,
+    errorMessage,
+    currentPage,
+    totalPages,
+    canPrev,
+    canNext,
+    onPrev,
+    onNext,
+  } = props
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Список операций</CardTitle>
       </CardHeader>
+
       <CardContent className="space-y-4">
         {errorMessage ? (
           <p className="text-sm text-destructive">{errorMessage}</p>
@@ -47,6 +52,7 @@ export function OperationsTableCard({
           <p className="text-sm text-muted-foreground">
             Страница {currentPage} из {totalPages}
           </p>
+
           <div className="flex gap-2">
             <Button variant="outline" disabled={!canPrev} onClick={onPrev}>
               Назад
