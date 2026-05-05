@@ -1,23 +1,34 @@
+import type { ReactNode } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable } from '#/components/data/data-table'
-import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '#/components/ui/card'
 import type { TableCardProps } from '#/features/shared/contracts'
 import type { Role } from '#/lib/finance/schemas'
 
 interface RolesTableCardProps
   extends Readonly<TableCardProps<Role>> {
   readonly columns: ColumnDef<Role>[]
+  readonly headerAction?: ReactNode
+  readonly footerAction?: ReactNode
 }
 
 export function RolesTableCard(
   props: Readonly<RolesTableCardProps>,
 ) {
-  const { columns, data, errorMessage } = props
+  const { columns, data, errorMessage, headerAction, footerAction } = props
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Список ролей</CardTitle>
+        {headerAction ? <CardAction>{headerAction}</CardAction> : null}
       </CardHeader>
 
       <CardContent>
@@ -27,6 +38,9 @@ export function RolesTableCard(
           <DataTable columns={columns} data={data} />
         )}
       </CardContent>
+      {footerAction ? (
+        <CardFooter className="justify-end">{footerAction}</CardFooter>
+      ) : null}
     </Card>
   )
 }

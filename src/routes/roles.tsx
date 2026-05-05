@@ -42,27 +42,28 @@ function RolesPage() {
         description="Управление справочником ролей."
       />
 
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button>Создать роль</Button>
-        </DialogTrigger>
-        <DialogContent className="max-w-xl">
-          <DialogHeader>
-            <DialogTitle>Новая роль</DialogTitle>
-          </DialogHeader>
-          <RolesCreateCard
-            value={model.form}
-            onChange={model.setForm}
-            onApply={model.onApply}
-            isPending={model.isSubmitPending}
-          />
-        </DialogContent>
-      </Dialog>
-
       <RolesTableCard
         columns={columns}
         data={model.rows}
         errorMessage={model.rowsErrorMessage}
+        footerAction={
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button size="sm">Создать роль</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-xl">
+              <DialogHeader>
+                <DialogTitle>Новая роль</DialogTitle>
+              </DialogHeader>
+              <RolesCreateCard
+                value={model.form}
+                onChange={model.setForm}
+                onApply={model.onApply}
+                isPending={model.isSubmitPending}
+              />
+            </DialogContent>
+          </Dialog>
+        }
       />
     </main>
   )

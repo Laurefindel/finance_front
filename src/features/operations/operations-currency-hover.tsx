@@ -1,22 +1,23 @@
 import { Badge } from '#/components/ui/badge'
 import { Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip'
-import type { CurrencyResponse } from '#/lib/finance/schemas'
 
-interface AccountsCurrencyHoverProps {
-  currency: CurrencyResponse | undefined
+interface OperationsCurrencyHoverProps {
+  code?: string | null
+  name?: string | null
 }
 
-function normalizeCode(currency: CurrencyResponse | undefined) {
-  return currency?.code?.trim().toUpperCase() || ''
+function normalizeCode(code: string | null | undefined) {
+  return code?.trim().toUpperCase() || ''
 }
 
-export function AccountsCurrencyHover({
-  currency,
-}: Readonly<AccountsCurrencyHoverProps>) {
-  const code = normalizeCode(currency)
-  const name = currency?.name?.trim() || 'Без названия'
+export function OperationsCurrencyHover({
+  code,
+  name,
+}: Readonly<OperationsCurrencyHoverProps>) {
+  const normalizedCode = normalizeCode(code)
+  const currencyName = name?.trim() || 'Без названия'
 
-  if (!code && !currency?.name) {
+  if (!normalizedCode && !name) {
     return <span>-</span>
   }
 
@@ -28,10 +29,9 @@ export function AccountsCurrencyHover({
           className="inline-flex cursor-help items-center rounded-md border border-transparent px-2 py-1 text-sm font-medium text-foreground transition-colors hover:border-border hover:bg-muted/60"
           aria-label="Информация о валюте"
         >
-          {code || '---'}
+          {normalizedCode || '---'}
         </button>
       </TooltipTrigger>
-
       <TooltipContent
         side="top"
         sideOffset={8}
@@ -39,12 +39,10 @@ export function AccountsCurrencyHover({
       >
         <div className="space-y-2.5">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold">Валюта счета</p>
-            <Badge variant="secondary">{code || '---'}</Badge>
+            <p className="text-xs font-semibold">Валюта операции</p>
+            <Badge variant="secondary">{normalizedCode || '---'}</Badge>
           </div>
-
-          <p className="text-[11px] text-background/85">{name}</p>
-
+          <p className="text-[11px] text-background/85">{currencyName}</p>
         </div>
       </TooltipContent>
     </Tooltip>

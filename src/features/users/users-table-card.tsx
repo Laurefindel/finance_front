@@ -1,6 +1,14 @@
+import type { ReactNode } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable } from '#/components/data/data-table'
-import { Card, CardContent, CardHeader, CardTitle } from '#/components/ui/card'
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '#/components/ui/card'
 import { Skeleton } from '#/components/ui/skeleton'
 import type { TableCardProps } from '#/features/shared/contracts'
 import type { UserTableRow } from './types'
@@ -11,6 +19,8 @@ interface UsersTableCardProps
   readonly isInitialLoading: boolean
   readonly isFatalError: boolean
   readonly hasRefreshError: boolean
+  readonly headerAction?: ReactNode
+  readonly footerAction?: ReactNode
 }
 
 export function UsersTableCard(
@@ -23,6 +33,8 @@ export function UsersTableCard(
     isInitialLoading,
     isFatalError,
     hasRefreshError,
+    headerAction,
+    footerAction,
   } = props
 
   if (isInitialLoading) {
@@ -30,6 +42,7 @@ export function UsersTableCard(
       <Card>
         <CardHeader>
           <CardTitle>Список пользователей</CardTitle>
+          {headerAction ? <CardAction>{headerAction}</CardAction> : null}
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -38,6 +51,9 @@ export function UsersTableCard(
             <Skeleton className="h-10 w-full" />
           </div>
         </CardContent>
+        {footerAction ? (
+          <CardFooter className="justify-end">{footerAction}</CardFooter>
+        ) : null}
       </Card>
     )
   }
@@ -47,10 +63,14 @@ export function UsersTableCard(
       <Card>
         <CardHeader>
           <CardTitle>Список пользователей</CardTitle>
+          {headerAction ? <CardAction>{headerAction}</CardAction> : null}
         </CardHeader>
         <CardContent>
           <p className="text-sm text-destructive">{errorMessage}</p>
         </CardContent>
+        {footerAction ? (
+          <CardFooter className="justify-end">{footerAction}</CardFooter>
+        ) : null}
       </Card>
     )
   }
@@ -59,6 +79,7 @@ export function UsersTableCard(
     <Card>
       <CardHeader>
         <CardTitle>Список пользователей</CardTitle>
+        {headerAction ? <CardAction>{headerAction}</CardAction> : null}
       </CardHeader>
 
       <CardContent>
@@ -72,6 +93,9 @@ export function UsersTableCard(
           <DataTable columns={columns} data={data} />
         </div>
       </CardContent>
+      {footerAction ? (
+        <CardFooter className="justify-end">{footerAction}</CardFooter>
+      ) : null}
     </Card>
   )
 }

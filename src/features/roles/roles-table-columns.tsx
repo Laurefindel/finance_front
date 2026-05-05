@@ -18,27 +18,29 @@ export function createRolesTableColumns({
     },
     {
       id: 'actions',
-      header: 'Действия',
+      header: <div className="text-right">Действия</div>,
       cell: ({ row }) => {
         const id = row.original.id
 
         return (
-          <ConfirmDialogButton
-            triggerLabel="Удалить"
-            title="Удалить роль?"
-            description="Роль будет удалена из справочника. Проверьте, что она не назначена критичным пользователям."
-            confirmLabel="Удалить"
-            triggerVariant="destructive"
-            disabled={!id || isDeletePending}
-            isPending={isDeletePending}
-            onConfirm={async () => {
-              if (!id) {
-                return
-              }
+          <div className="flex justify-end">
+            <ConfirmDialogButton
+              triggerLabel="Удалить"
+              title="Удалить роль?"
+              description="Роль будет удалена из справочника. Проверьте, что она не назначена критичным пользователям."
+              confirmLabel="Удалить"
+              triggerVariant="destructive"
+              disabled={!id || isDeletePending}
+              isPending={isDeletePending}
+              onConfirm={async () => {
+                if (!id) {
+                  return
+                }
 
-              await onDelete(id)
-            }}
-          />
+                await onDelete(id)
+              }}
+            />
+          </div>
         )
       },
     },

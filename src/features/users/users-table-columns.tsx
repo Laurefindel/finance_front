@@ -56,17 +56,29 @@ export function createUsersTableColumns({
     {
       id: 'accounts',
       header: 'Счета',
-      cell: ({ row }) =>
-        row.original.accountsSummary.length || row.original.accountsIds?.length || 0,
+      cell: ({ row }) => {
+        const total =
+          row.original.accountsSummary.length ||
+          row.original.accountsIds?.length ||
+          0
+
+        return (
+          <UsersAccountsHover
+            user={row.original}
+            triggerLabel={String(total)}
+            accountsSummary={row.original.accountsSummary}
+          />
+        )
+      },
     },
     {
       id: 'actions',
-      header: 'Действия',
+      header: <div className="text-right">Действия</div>,
       cell: ({ row }) => {
         const id = row.original.id
 
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             <UsersUpdateDialogButton
               user={row.original}
               isPending={isUpdatePending}

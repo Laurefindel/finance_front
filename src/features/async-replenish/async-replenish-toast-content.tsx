@@ -11,19 +11,19 @@ export interface AsyncMetricsSnapshot {
   failed: number
 }
 
-export interface AsyncToastPayload extends AsyncMetricsSnapshot {
-  taskId: string
+export interface AsyncToastDetails {
+  accountLabel: string
+  amountLabel: string
+}
+
+export interface AsyncToastPayload {
   status: NormalizedAsyncStatus
-  message: string
+  details: AsyncToastDetails
 }
 
 export function buildAsyncToastContent({
   status,
-  message,
-  submitted,
-  running,
-  succeeded,
-  failed,
+  details,
 }: AsyncToastPayload) {
   let statusVariant: 'destructive' | 'default' | 'secondary' = 'secondary'
 
@@ -36,19 +36,11 @@ export function buildAsyncToastContent({
   return (
     <div className="flex min-w-72 flex-col gap-2">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-semibold">Async replenish</p>
+        <p className="text-sm font-semibold">Асинхронное пополнение</p>
         <Badge variant={statusVariant}>{status}</Badge>
       </div>
-      <p className="text-xs leading-relaxed">{message}</p>
-      <div className="grid grid-cols-2 gap-1 text-[11px] sm:grid-cols-4">
-        <span className="rounded-md bg-muted px-2 py-1">submitted: {submitted}</span>
-        <span className="rounded-md bg-muted px-2 py-1">running: {running}</span>
-        <span className="rounded-md bg-muted px-2 py-1">succeeded: {succeeded}</span>
-        <span className="rounded-md bg-muted px-2 py-1">failed: {failed}</span>
-      </div>
-      <p className="text-[10px] text-muted-foreground">
-        Этапы: запуск задачи, мониторинг статуса и обновление метрик.
-      </p>
+      <p className="text-xs text-muted-foreground">Счет: {details.accountLabel}</p>
+      <p className="text-xs text-muted-foreground">Сумма: {details.amountLabel}</p>
     </div>
   )
 }
@@ -60,37 +52,29 @@ function showLoadingToast(payload: AsyncToastPayload) {
   })
 }
 
-export function showAsyncStartSubmittingToast(metrics: AsyncMetricsSnapshot) {
+export function showAsyncStartSubmittingToast(details: AsyncToastDetails) {
   showLoadingToast({
-    taskId: 'ожидание ответа',
     status: 'PENDING',
-    message: 'Отправляем задачу на асинхронное пополнение.',
-    ...metrics,
+    details,
   })
 }
 
 export function showAsyncStartedToast(
-  taskId: string,
-  metrics: AsyncMetricsSnapshot,
+  details: AsyncToastDetails,
 ) {
   showLoadingToast({
-    taskId,
-    status: 'PENDING',
-    message: 'Задача запущена, ожидаем выполнение.',
-    ...metrics,
+    status: 'RUNNING',
+    details,
   })
 }
 
 export function showAsyncStartFailedToast(
-  errorMessage: string,
-  metrics: AsyncMetricsSnapshot,
+  details: AsyncToastDetails,
 ) {
   toast.error(
     buildAsyncToastContent({
-      taskId: 'не получен',
       status: 'FAILED',
-      message: `Не удалось запустить задачу: ${errorMessage}`,
-      ...metrics,
+      details,
     }),
     {
       id: ASYNC_TOAST_ID,

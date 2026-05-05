@@ -1,4 +1,4 @@
-import { useMemo, useState, type SyntheticEvent } from 'react'
+import { useMemo, useRef, useState, type SyntheticEvent } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import type { FormActionModel } from '#/features/shared/action-models'
 import {
@@ -24,11 +24,16 @@ const ASYNC_STATUS_POLL_MS = 2500
 const ASYNC_METRICS_POLL_MS = 2500
 const ASYNC_IDLE_METRICS_POLL_MS = 6000
 
+interface AsyncStartContext {
+  accountId: string
+  amount: string
+}
+
 interface AsyncReplenishPageModelNotifications {
   onValidationError?: (message: string) => void
-  onStartSubmitting?: (metrics: AsyncMetricsSnapshot) => void
-  onStartSuccess?: (taskId: string, metrics: AsyncMetricsSnapshot) => void
-  onStartError?: (message: string, metrics: AsyncMetricsSnapshot) => void
+  onStartSubmitting?: (context: AsyncStartContext) => void
+  onStartSuccess?: (taskId: string, context: AsyncStartContext) => void
+  onStartError?: (message: string, context: AsyncStartContext) => void
 }
 
 function createDefaultFormState(): AsyncReplenishFormState {
@@ -40,6 +45,14 @@ export function useAsyncReplenishPageModel(
 ) {
   const [form, setForm] = useState<AsyncReplenishFormState>(createDefaultFormState)
   const [taskId, setTaskId] = useState('')
+  const [lastSubmission, setLastSubmission] = useState<AsyncStartContext>({
+    accountId: '',
+    amount: '',
+  })
+  const lastSubmissionRef = useRef<AsyncStartContext>({
+    accountId: '',
+    amount: '',
+  })
 
   const statusQuery = useQuery({
     queryKey: financeQueryKeys.asyncStatus(taskId),
@@ -111,17 +124,20 @@ export function useAsyncReplenishPageModel(
     mutationFn: (payload: { accountId: number; amount: number }) =>
       startAsyncReplenishFn({ data: payload }),
     onMutate: () => {
-      notifications?.onStartSubmitting?.(metrics)
+      notifications?.onStartSubmitting?.(lastSubmissionRef.current)
     },
     onSuccess: async (data) => {
       setTaskId(data.taskId)
 
-      notifications?.onStartSuccess?.(data.taskId, metrics)
+      notifications?.onStartSuccess?.(data.taskId, lastSubmissionRef.current)
 
       await metricsQuery.refetch()
     },
     onError: (error) => {
-      notifications?.onStartError?.(getErrorMessage(error), metrics)
+      notifications?.onStartError?.(
+        getErrorMessage(error),
+        lastSubmissionRef.current,
+      )
     },
   })
 
@@ -139,6 +155,14 @@ export function useAsyncReplenishPageModel(
       notifications?.onValidationError?.('Выберите счет и корректную сумму')
       return
     }
+
+    const submission: AsyncStartContext = {
+      accountId: form.accountId,
+      amount: form.amount,
+    }
+
+    lastSubmissionRef.current = submission
+    setLastSubmission(submission)
 
     setTaskId('')
 
@@ -176,6 +200,7 @@ export function useAsyncReplenishPageModel(
       status: normalizedStatus,
       statusMessage,
       metrics,
+      details: lastSubmission,
       statusErrorMessage,
       metricsErrorMessage,
     },

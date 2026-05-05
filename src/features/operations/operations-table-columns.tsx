@@ -5,6 +5,7 @@ import type {
   FinancialOperationResponse,
   UserResponse,
 } from '#/lib/finance/schemas'
+import { OperationsCurrencyHover } from './operations-currency-hover'
 import { OperationsPartyHover } from './operations-party-hover'
 
 interface CreateOperationsTableColumnsOptions {
@@ -63,7 +64,21 @@ export function createOperationsTableColumns({
     {
       accessorKey: 'currencyCode',
       header: 'Валюта',
-      cell: ({ row }) => row.original.currencyCode ?? '-',
+      cell: ({ row }) => {
+        const senderDetails = getPartyDetails(row.original.senderAccountId)
+        const receiverDetails = getPartyDetails(row.original.receiverAccountId)
+        const currency =
+          senderDetails.account?.currency ?? receiverDetails.account?.currency
+        const currencyCode = row.original.currencyCode || currency?.code || ''
+        const currencyName = currency?.name || ''
+
+        return (
+          <OperationsCurrencyHover
+            code={currencyCode}
+            name={currencyName}
+          />
+        )
+      },
     },
     {
       accessorKey: 'description',
@@ -72,26 +87,28 @@ export function createOperationsTableColumns({
     },
     {
       id: 'actions',
-      header: 'Действия',
+      header: <div className="text-right">Действия</div>,
       cell: ({ row }) => {
         const id = row.original.id
 
         return (
-          <ConfirmDialogButton
-            triggerLabel="Удалить"
-            title="Удалить операцию?"
-            description="Операция будет удалена из списка. Продолжить?"
-            confirmLabel="Удалить"
-            disabled={!id || isDeletePending}
-            isPending={isDeletePending}
-            onConfirm={async () => {
-              if (!id) {
-                return
-              }
+          <div className="flex justify-end">
+            <ConfirmDialogButton
+              triggerLabel="Удалить"
+              title="Удалить операцию?"
+              description="Операция будет удалена из списка. Продолжить?"
+              confirmLabel="Удалить"
+              disabled={!id || isDeletePending}
+              isPending={isDeletePending}
+              onConfirm={async () => {
+                if (!id) {
+                  return
+                }
 
-              await onDelete(id)
-            }}
-          />
+                await onDelete(id)
+              }}
+            />
+          </div>
         )
       },
     },

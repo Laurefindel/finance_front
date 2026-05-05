@@ -49,23 +49,6 @@ function UsersPage() {
         description="Регистрация и управление пользователями Finance API."
       />
 
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button>Создать пользователя</Button>
-        </DialogTrigger>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Новый пользователь</DialogTitle>
-          </DialogHeader>
-          <UsersCreateCard
-            value={model.form}
-            onChange={model.setForm}
-            onApply={model.onApply}
-            isPending={model.isSubmitPending}
-          />
-        </DialogContent>
-      </Dialog>
-
       <UsersTableCard
         columns={columns}
         data={model.rows}
@@ -73,6 +56,24 @@ function UsersPage() {
         isInitialLoading={model.isInitialLoading}
         isFatalError={model.isFatalError}
         hasRefreshError={model.hasRefreshError}
+        footerAction={
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button size="sm">Создать пользователя</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Новый пользователь</DialogTitle>
+              </DialogHeader>
+              <UsersCreateCard
+                value={model.form}
+                onChange={model.setForm}
+                onApply={model.onApply}
+                isPending={model.isSubmitPending}
+              />
+            </DialogContent>
+          </Dialog>
+        }
       />
     </main>
   )

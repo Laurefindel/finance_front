@@ -8,7 +8,6 @@ import type {
 import {
   createCurrencyFn,
   deleteCurrencyFn,
-  getCurrencyByCodeFn,
   listCurrenciesFn,
   updateCurrencyFn,
 } from '#/lib/finance/finance.functions'
@@ -17,17 +16,11 @@ import { financeQueryKeys } from '#/lib/finance/queries/query-keys'
 import type { CurrencyRequest, CurrencyResponse } from '#/lib/finance/schemas'
 import {
   defaultCreateCurrencyForm,
-  defaultUpdateCurrencyForm,
   type CreateCurrencyFormState,
-  type UpdateCurrencyFormState,
 } from './types'
 
 function createDefaultCreateForm(): CreateCurrencyFormState {
   return { ...defaultCreateCurrencyForm }
-}
-
-function createDefaultUpdateForm(): UpdateCurrencyFormState {
-  return { ...defaultUpdateCurrencyForm }
 }
 
 interface CurrenciesPageModelNotifications {
@@ -40,6 +33,11 @@ interface DeleteCurrencyAction {
   isPending: boolean
 }
 
+interface UpdateCurrencyAction {
+  onUpdate: (id: number, payload: CurrencyRequest) => Promise<void>
+  isPending: boolean
+}
+
 export function useCurrenciesPageModel(
   notifications?: CurrenciesPageModelNotifications,
 ) {
@@ -47,8 +45,6 @@ export function useCurrenciesPageModel(
 
   const [createForm, setCreateForm] =
     useState<CreateCurrencyFormState>(createDefaultCreateForm)
-  const [updateForm, setUpdateForm] =
-    useState<UpdateCurrencyFormState>(createDefaultUpdateForm)
 
   const currenciesQuery = useQuery({
     queryKey: financeQueryKeys.currencies,
@@ -74,7 +70,6 @@ export function useCurrenciesPageModel(
       updateCurrencyFn({ data: payload }),
     onSuccess: async () => {
       notifications?.onSuccess?.('Валюта обновлена')
-      setUpdateForm(createDefaultUpdateForm())
       await queryClient.invalidateQueries({
         queryKey: financeQueryKeys.currencies,
       })
@@ -110,40 +105,17 @@ export function useCurrenciesPageModel(
     }
   }
 
-  const onUpdateSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    const currentCode = updateForm.currentCode.trim().toUpperCase()
-
-    if (!currentCode) {
-      notifications?.onError?.('Выберите валюту для обновления')
-      return
-    }
-
-    try {
-      const current = await getCurrencyByCodeFn({ data: { code: currentCode } })
-      const currentId = current?.id
-
-      if (!currentId || currentId <= 0) {
-        notifications?.onError?.('Не удалось определить ID валюты')
-        return
-      }
-
-      await updateMutation.mutateAsync({
-        id: currentId,
-        payload: {
-          code: updateForm.code.trim().toUpperCase(),
-          name: updateForm.name.trim(),
-        },
-      })
-    } catch (error) {
-      notifications?.onError?.(getErrorMessage(error))
-    }
-  }
-
   const onDelete = async (id: number) => {
     try {
       await deleteMutation.mutateAsync(id)
+    } catch {
+      // onError already reports the issue.
+    }
+  }
+
+  const onUpdate = async (id: number, payload: CurrencyRequest) => {
+    try {
+      await updateMutation.mutateAsync({ id, payload })
     } catch {
       // onError already reports the issue.
     }
@@ -156,10 +128,8 @@ export function useCurrenciesPageModel(
     isPending: createMutation.isPending,
   }
 
-  const update: FormActionModel<UpdateCurrencyFormState> = {
-    form: updateForm,
-    setForm: setUpdateForm,
-    onApply: onUpdateSubmit,
+  const update: UpdateCurrencyAction = {
+    onUpdate,
     isPending: updateMutation.isPending,
   }
 

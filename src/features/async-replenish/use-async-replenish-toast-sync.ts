@@ -4,14 +4,13 @@ import type { NormalizedAsyncStatus } from './async-replenish-status'
 import {
   ASYNC_TOAST_ID,
   buildAsyncToastContent,
-  type AsyncMetricsSnapshot,
+  type AsyncToastDetails,
 } from './async-replenish-toast-content'
 
 interface UseAsyncReplenishToastSyncOptions {
   taskId: string
   status: NormalizedAsyncStatus
-  statusMessage: string
-  metrics: AsyncMetricsSnapshot
+  details: AsyncToastDetails
   statusErrorMessage: string | null
   metricsErrorMessage: string | null
 }
@@ -19,8 +18,7 @@ interface UseAsyncReplenishToastSyncOptions {
 export function useAsyncReplenishToastSync({
   taskId,
   status,
-  statusMessage,
-  metrics,
+  details,
   statusErrorMessage,
   metricsErrorMessage,
 }: UseAsyncReplenishToastSyncOptions) {
@@ -35,11 +33,8 @@ export function useAsyncReplenishToastSync({
     const signature = [
       taskId,
       status,
-      statusMessage,
-      metrics.submitted,
-      metrics.running,
-      metrics.succeeded,
-      metrics.failed,
+      details.accountLabel,
+      details.amountLabel,
     ].join('|')
 
     if (signature === statusToastSignatureRef.current) {
@@ -49,10 +44,8 @@ export function useAsyncReplenishToastSync({
     statusToastSignatureRef.current = signature
 
     const content = buildAsyncToastContent({
-      taskId,
       status,
-      message: statusMessage,
-      ...metrics,
+      details,
     })
 
     if (status === 'SUCCEEDED') {
@@ -75,16 +68,7 @@ export function useAsyncReplenishToastSync({
       id: ASYNC_TOAST_ID,
       duration: Infinity,
     })
-  }, [
-    metrics,
-    metrics.failed,
-    metrics.running,
-    metrics.submitted,
-    metrics.succeeded,
-    status,
-    statusMessage,
-    taskId,
-  ])
+  }, [details.accountLabel, details.amountLabel, status, taskId])
 
   useEffect(() => {
     if (!taskId) {
@@ -103,35 +87,15 @@ export function useAsyncReplenishToastSync({
 
     errorToastSignatureRef.current = signature
 
-    const details = [
-      statusErrorMessage
-        ? `Не удалось получить статус задачи: ${statusErrorMessage}`
-        : null,
-      metricsErrorMessage
-        ? `Не удалось получить метрики: ${metricsErrorMessage}`
-        : null,
-    ].filter((value): value is string => Boolean(value))
-
     toast.error(
       buildAsyncToastContent({
-        taskId,
         status: 'FAILED',
-        message: details.join(' | '),
-        ...metrics,
+        details,
       }),
       {
         id: ASYNC_TOAST_ID,
         duration: 10000,
       },
     )
-  }, [
-    metrics,
-    metrics.failed,
-    metrics.running,
-    metrics.submitted,
-    metrics.succeeded,
-    metricsErrorMessage,
-    statusErrorMessage,
-    taskId,
-  ])
+  }, [details, metricsErrorMessage, statusErrorMessage, taskId])
 }

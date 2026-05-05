@@ -2,16 +2,22 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { ConfirmDialogButton } from '#/components/ui/confirm-dialog-button'
 import type { AccountResponse } from '#/lib/finance/schemas'
 import { AccountsCurrencyHover } from './accounts-currency-hover'
+import { AccountsOwnerHover } from './accounts-owner-hover'
 import { AccountsOperationsHover } from './accounts-operations-hover'
+import { AccountsReplenishMenu } from './accounts-replenish-menu'
 
 interface AccountsTableColumnsOptions {
   isDeletePending: boolean
   onDelete: (id: number) => Promise<void>
+  onOpenReplenish: (accountId: number) => void
+  onOpenAsync: (accountId: number) => void
 }
 
 export function createAccountsTableColumns({
   isDeletePending,
   onDelete,
+  onOpenReplenish,
+  onOpenAsync,
 }: AccountsTableColumnsOptions): Array<ColumnDef<AccountResponse>> {
   return [
     {
@@ -26,12 +32,7 @@ export function createAccountsTableColumns({
       id: 'owner',
       header: 'Владелец',
       cell: ({ row }) => {
-        const user = row.original.user
-        if (!user) {
-          return '-'
-        }
-
-        return `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || '-'
+        return <AccountsOwnerHover user={row.original.user} />
       },
     },
     {
@@ -73,30 +74,37 @@ export function createAccountsTableColumns({
     },
     {
       id: 'actions',
-      header: 'Действия',
+      header: <div className="text-right">Действия</div>,
       cell: ({ row }) => {
         const id = row.original.id
 
         return (
-          <ConfirmDialogButton
-            triggerLabel="Удалить"
-            title="Удалить счет?"
-            description="Действие необратимо. Счет и связанные данные нельзя будет восстановить автоматически."
-            confirmLabel="Удалить"
-            disabled={!id || isDeletePending}
-            isPending={isDeletePending}
-            onConfirm={async () => {
-              if (!id) {
-                return
-              }
+          <div className="flex items-center justify-end gap-2">
+            <AccountsReplenishMenu
+              account={row.original}
+              onOpenReplenish={onOpenReplenish}
+              onOpenAsync={onOpenAsync}
+            />
+            <ConfirmDialogButton
+              triggerLabel="Удалить"
+              title="Удалить счет?"
+              description="Действие необратимо. Счет и связанные данные нельзя будет восстановить автоматически."
+              confirmLabel="Удалить"
+              disabled={!id || isDeletePending}
+              isPending={isDeletePending}
+              onConfirm={async () => {
+                if (!id) {
+                  return
+                }
 
-              try {
-                await onDelete(id)
-              } catch {
-                // Mutation error is handled in the page model notifications.
-              }
-            }}
-          />
+                try {
+                  await onDelete(id)
+                } catch {
+                  // Mutation error is handled in the page model notifications.
+                }
+              }}
+            />
+          </div>
         )
       },
     },

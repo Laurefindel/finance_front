@@ -50,7 +50,7 @@ export function AccountsFiltersCard({
         <CardTitle>Фильтры</CardTitle>
       </CardHeader>
       <CardContent>
-        <form className="grid gap-4 md:grid-cols-3">
+        <form className="flex flex-col gap-4">
           <div className="space-y-2">
             <Label htmlFor="filterUserId">Пользователь</Label>
             <Select
@@ -107,7 +107,7 @@ export function AccountsFiltersCard({
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-end">
+          <div className="flex flex-wrap gap-3">
             <Button type="button" variant="outline" onClick={onReset}>
               Сбросить фильтры
             </Button>

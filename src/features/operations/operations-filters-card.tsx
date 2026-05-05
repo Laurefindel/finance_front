@@ -41,7 +41,7 @@ export function OperationsFiltersCard({
         <CardTitle>Фильтры и пагинация</CardTitle>
       </CardHeader>
       <CardContent>
-        <form className="grid gap-4 md:grid-cols-3" onSubmit={onApply}>
+        <form className="flex flex-col gap-4" onSubmit={onApply}>
           <div className="space-y-2">
             <Label>Размер страницы</Label>
             <Input
@@ -141,30 +141,7 @@ export function OperationsFiltersCard({
               }
             />
           </div>
-          <div className="space-y-2">
-            <Label>Дата с</Label>
-            <Input
-              type="datetime-local"
-              value={value.fromDate}
-              onChange={(event) =>
-                onChange((prev) => ({
-                  ...prev,
-                  fromDate: event.target.value,
-                }))
-              }
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Дата по</Label>
-            <Input
-              type="datetime-local"
-              value={value.toDate}
-              onChange={(event) =>
-                onChange((prev) => ({ ...prev, toDate: event.target.value }))
-              }
-            />
-          </div>
-          <div className="md:col-span-3 flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <Button type="submit">Применить</Button>
             <Button type="button" variant="outline" onClick={onReset}>
               Сбросить
