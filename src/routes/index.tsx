@@ -1,18 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { DashboardHeroSection } from '#/features/dashboard/dashboard-hero-section'
-import { DashboardStatsSection } from '#/features/dashboard/dashboard-stats-section'
-import { useDashboardPageModel } from '#/features/dashboard/use-dashboard-page-model'
+import { createFileRoute, Navigate } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/')({ component: DashboardPage })
+export const Route = createFileRoute('/')({ component: IndexPage })
 
-function DashboardPage() {
-  const model = useDashboardPageModel()
-
-  return (
-    <main className="page-wrap space-y-6 px-4 pb-8 pt-10">
-      <DashboardHeroSection />
-
-      <DashboardStatsSection cards={model.cards} />
-    </main>
-  )
+function IndexPage() {
+  return <Navigate to="/users" />
 }

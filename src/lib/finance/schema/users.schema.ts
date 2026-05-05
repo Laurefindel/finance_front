@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { RoleSchema } from './roles.schema'
 
 function isValidEmail(value: string) {
   if (value.length > 254) {
@@ -59,6 +60,7 @@ export const UserResponseSchema = z.object({
   status: z.string().trim().optional(),
   accountsIds: z.array(z.number().int()).optional().default([]),
   roleIds: z.array(z.number().int()).optional().default([]),
+  roles: z.array(RoleSchema).optional().default([]),
 })
 
 export type UserRequest = z.infer<typeof UserRequestSchema>

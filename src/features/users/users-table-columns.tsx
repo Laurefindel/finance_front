@@ -54,6 +54,26 @@ export function createUsersTableColumns({
       ),
     },
     {
+      id: 'roles',
+      header: 'Роли',
+      cell: ({ row }) => {
+        const roles = row.original.roles ?? []
+        if (!roles.length) {
+          return <span className="text-xs text-muted-foreground">—</span>
+        }
+
+        return (
+          <div className="flex flex-wrap gap-1">
+            {roles.map((role, index) => (
+              <Badge key={`${role.id ?? role.name ?? 'role'}-${index}`} variant="outline">
+                {role.name ?? 'Без названия'}
+              </Badge>
+            ))}
+          </div>
+        )
+      },
+    },
+    {
       id: 'accounts',
       header: 'Счета',
       cell: ({ row }) => {

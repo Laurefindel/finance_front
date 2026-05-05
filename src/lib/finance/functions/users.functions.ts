@@ -16,6 +16,11 @@ const updateUserInputSchema = z.object({
   payload: UserRequestSchema,
 })
 
+const roleAssignmentSchema = z.object({
+  id: z.number().int().positive(),
+  roleId: z.number().int().positive(),
+})
+
 export const listUsersFn = createServerFn({ method: 'GET' }).handler(
   async (): Promise<UserResponse[]> => {
     return financeRequest({
@@ -57,4 +62,24 @@ export const deleteUserFn = createServerFn({ method: 'POST' })
     })
 
     return { success: true }
+  })
+
+export const assignUserRoleFn = createServerFn({ method: 'POST' })
+  .inputValidator(roleAssignmentSchema)
+  .handler(async ({ data }): Promise<UserResponse> => {
+    return financeRequest({
+      path: `/users/${data.id}/roles/${data.roleId}`,
+      method: 'POST',
+      schema: UserResponseSchema,
+    })
+  })
+
+export const removeUserRoleFn = createServerFn({ method: 'POST' })
+  .inputValidator(roleAssignmentSchema)
+  .handler(async ({ data }): Promise<UserResponse> => {
+    return financeRequest({
+      path: `/users/${data.id}/roles/${data.roleId}`,
+      method: 'DELETE',
+      schema: UserResponseSchema,
+    })
   })

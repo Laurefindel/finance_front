@@ -3,7 +3,7 @@ import { cn } from '#/lib/utils'
 interface PageHeaderSectionProps {
   readonly kicker: string
   readonly title: string
-  readonly description: string
+  readonly description?: string
   readonly className?: string
   readonly titleClassName?: string
   readonly descriptionClassName?: string
@@ -32,14 +32,16 @@ export function PageHeaderSection(props: Readonly<PageHeaderSectionProps>) {
         {title}
       </h1>
 
-      <p
-        className={cn(
-          'text-sm text-(--sea-ink-soft)',
-          descriptionClassName,
-        )}
-      >
-        {description}
-      </p>
+      {description ? (
+        <p
+          className={cn(
+            'text-sm text-(--sea-ink-soft)',
+            descriptionClassName,
+          )}
+        >
+          {description}
+        </p>
+      ) : null}
     </header>
   )
 }

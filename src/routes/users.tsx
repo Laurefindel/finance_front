@@ -46,7 +46,6 @@ function UsersPage() {
       <PageHeaderSection
         kicker="Пользователи"
         title="Пользователи"
-        description="Регистрация и управление пользователями Finance API."
       />
 
       <UsersTableCard
@@ -56,7 +55,7 @@ function UsersPage() {
         isInitialLoading={model.isInitialLoading}
         isFatalError={model.isFatalError}
         hasRefreshError={model.hasRefreshError}
-        footerAction={
+        headerAction={
           <Dialog>
             <DialogTrigger asChild>
               <Button size="sm">Создать пользователя</Button>

@@ -29,6 +29,7 @@ function normalizeUser(user: UserResponse): UserResponse {
     ...user,
     accountsIds: user.accountsIds ?? [],
     roleIds: user.roleIds ?? [],
+    roles: user.roles ?? [],
   }
 }
 

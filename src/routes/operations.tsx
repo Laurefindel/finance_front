@@ -60,7 +60,6 @@ function OperationsPage() {
       <PageHeaderSection
         kicker="Операции"
         title="Операции"
-        description="Поиск, создание, удаление и bulk-операции."
       />
 
       <OperationsTableCard
@@ -74,30 +73,29 @@ function OperationsPage() {
         onPrev={model.table.pagination.onPrev}
         onNext={model.table.pagination.onNext}
         headerAction={
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="sm">
-                Фильтры
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-full sm:max-w-lg">
-              <SheetHeader>
-                <SheetTitle>Фильтры операций</SheetTitle>
-              </SheetHeader>
-              <div className="p-4">
-                <OperationsFiltersCard
-                  value={model.filters.form}
-                  onChange={model.filters.setForm}
-                  onApply={model.filters.onApply}
-                  onReset={model.filters.onReset}
-                  users={model.lookups.users}
-                />
-              </div>
-            </SheetContent>
-          </Sheet>
-        }
-        footerAction={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm">
+                  Фильтры
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-full sm:max-w-lg">
+                <SheetHeader>
+                  <SheetTitle>Фильтры операций</SheetTitle>
+                </SheetHeader>
+                <div className="p-4">
+                  <OperationsFiltersCard
+                    value={model.filters.form}
+                    onChange={model.filters.setForm}
+                    onApply={model.filters.onApply}
+                    onReset={model.filters.onReset}
+                    users={model.lookups.users}
+                  />
+                </div>
+              </SheetContent>
+            </Sheet>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="sm">Создать</Button>

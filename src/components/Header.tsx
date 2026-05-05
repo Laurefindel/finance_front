@@ -13,7 +13,6 @@ import {
 import ThemeToggle from './ThemeToggle'
 
 const appLinks = [
-  { to: '/', label: 'Главная' },
   { to: '/users', label: 'Пользователи' },
   { to: '/roles', label: 'Роли' },
   { to: '/currencies', label: 'Валюты' },
@@ -40,7 +39,7 @@ export default function Header() {
       <nav aria-label="Primary" className="page-wrap flex items-center gap-3 py-3 sm:py-4">
         <h2 className="m-0 shrink-0 text-base font-semibold tracking-tight">
           <Link
-            to="/"
+            to="/users"
             className="inline-flex h-9 items-center text-base text-(--sea-ink) no-underline transition-colors hover:text-(--lagoon-deep) sm:text-lg"
           >
             Финансовая консоль

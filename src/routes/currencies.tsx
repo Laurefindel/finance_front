@@ -46,14 +46,13 @@ function CurrenciesPage() {
       <PageHeaderSection
         kicker="Валюты"
         title="Валюты"
-        description="Справочник валют: создание, обновление и удаление."
       />
 
       <CurrenciesTableCard
         columns={columns}
         data={model.table.rows}
         errorMessage={model.table.rowsErrorMessage}
-        footerAction={
+        headerAction={
           <Dialog>
             <DialogTrigger asChild>
               <Button size="sm">Создать валюту</Button>

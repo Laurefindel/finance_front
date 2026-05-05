@@ -130,7 +130,6 @@ export function AccountsPageContent() {
       <PageHeaderSection
         kicker="Счета"
         title="Счета"
-        description="Создание, фильтрация, синхронное и асинхронное пополнение, удаление счетов."
       />
 
       <AccountsTableCard
@@ -138,47 +137,48 @@ export function AccountsPageContent() {
         data={model.rows}
         errorMessage={model.rowsErrorMessage}
         headerAction={
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="sm">
-                Фильтры
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-full sm:max-w-lg">
-              <SheetHeader>
-                <SheetTitle>Фильтры счетов</SheetTitle>
-              </SheetHeader>
-              <div className="p-4">
-                <AccountsFiltersCard
-                  value={model.filters.form}
-                  onChange={model.filters.setForm}
-                  onReset={model.filters.onReset}
+          <div className="flex flex-wrap items-center gap-2">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm">
+                  Фильтры
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-full sm:max-w-lg">
+                <SheetHeader>
+                  <SheetTitle>Фильтры счетов</SheetTitle>
+                </SheetHeader>
+                <div className="p-4">
+                  <AccountsFiltersCard
+                    value={model.filters.form}
+                    onChange={model.filters.setForm}
+                    onReset={model.filters.onReset}
+                    users={model.lookups.users}
+                    currencies={model.lookups.currencies}
+                  />
+                </div>
+              </SheetContent>
+            </Sheet>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size="sm">Создать счет</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-xl">
+                <DialogHeader>
+                  <DialogTitle>Новый счет</DialogTitle>
+                </DialogHeader>
+                <AccountsCreateCard
+                  value={model.create.form}
+                  onChange={model.create.setForm}
+                  onApply={model.create.onApply}
+                  isPending={model.create.isPending}
                   users={model.lookups.users}
                   currencies={model.lookups.currencies}
                 />
-              </div>
-            </SheetContent>
-          </Sheet>
-        }
-        footerAction={
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button size="sm">Создать счет</Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-xl">
-              <DialogHeader>
-                <DialogTitle>Новый счет</DialogTitle>
-              </DialogHeader>
-              <AccountsCreateCard
-                value={model.create.form}
-                onChange={model.create.setForm}
-                onApply={model.create.onApply}
-                isPending={model.create.isPending}
-                users={model.lookups.users}
-                currencies={model.lookups.currencies}
-              />
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
+          </div>
         }
       />
 
