@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '#/components/ui/button'
 import {
@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from '#/components/ui/dialog'
 import { UsersCreateCard } from '#/features/users/users-create-card'
+import { UsersRolesDialog } from '#/features/users/users-roles-dialog-button'
 import { createUsersTableColumns } from '#/features/users/users-table-columns'
 import { UsersTableCard } from '#/features/users/users-table-card'
 import { useUsersPageModel } from '#/features/users/use-users-page-model'
@@ -20,24 +21,42 @@ export const Route = createFileRoute('/users')({
 })
 
 function UsersPage() {
+  const [openRolesUserId, setOpenRolesUserId] = useState<number | null>(null)
   const model = useUsersPageModel({
     onSuccess: (message) => toast.success(message),
     onError: (message) => toast.error(message),
   })
+
+  const selectedUser = useMemo(
+    () => model.rows.find((row) => row.id === openRolesUserId) ?? null,
+    [model.rows, openRolesUserId],
+  )
 
   const columns = useMemo(
     () =>
       createUsersTableColumns({
         isDeletePending: model.remove.isPending,
         isUpdatePending: model.update.isPending,
+        isAssignPending: model.assignments.isAssignPending,
+        isRemovePending: model.assignments.isRemovePending,
+        setOpenRolesUserId,
         onDelete: model.remove.onDelete,
         onUpdate: model.update.onUpdate,
+        onAssign: model.assignments.onAssign,
+        onRemove: model.assignments.onRemove,
+        roles: model.roles,
       }),
     [
+      model.assignments.isAssignPending,
+      model.assignments.isRemovePending,
+      model.assignments.onAssign,
+      model.assignments.onRemove,
       model.remove.isPending,
       model.remove.onDelete,
       model.update.isPending,
       model.update.onUpdate,
+      setOpenRolesUserId,
+      model.roles,
     ],
   )
 
@@ -73,6 +92,20 @@ function UsersPage() {
             </DialogContent>
           </Dialog>
         }
+      />
+      <UsersRolesDialog
+        user={selectedUser}
+        roles={model.roles}
+        onAssign={model.assignments.onAssign}
+        onRemove={model.assignments.onRemove}
+        isAssignPending={model.assignments.isAssignPending}
+        isRemovePending={model.assignments.isRemovePending}
+        isOpen={Boolean(selectedUser)}
+        onOpenChange={(nextOpen) => {
+          if (!nextOpen) {
+            setOpenRolesUserId(null)
+          }
+        }}
       />
     </main>
   )

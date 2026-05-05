@@ -29,21 +29,11 @@ function RolesPage() {
     () =>
       createRolesTableColumns({
         isDeletePending: model.remove.isPending,
-        isAssignPending: model.assignments.isAssignPending,
-        isRemovePending: model.assignments.isRemovePending,
         onDelete: model.remove.onDelete,
-        onAssign: model.assignments.onAssign,
-        onRemove: model.assignments.onRemove,
-        users: model.users,
       }),
     [
-      model.assignments.isAssignPending,
-      model.assignments.isRemovePending,
-      model.assignments.onAssign,
-      model.assignments.onRemove,
       model.remove.isPending,
       model.remove.onDelete,
-      model.users,
     ],
   )
 

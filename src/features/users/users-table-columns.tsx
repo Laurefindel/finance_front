@@ -1,13 +1,18 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '#/components/ui/badge'
+import { Button } from '#/components/ui/button'
 import { ConfirmDialogButton } from '#/components/ui/confirm-dialog-button'
 import { UsersAccountsHover } from './users-accounts-hover'
 import type { UserTableRow } from './types'
 import { UsersUpdateDialogButton } from './users-update-dialog-button'
+import type { Role } from '#/lib/finance/schemas'
 
 interface CreateUsersTableColumnsOptions {
   isDeletePending: boolean
   isUpdatePending: boolean
+  isAssignPending: boolean
+  isRemovePending: boolean
+  setOpenRolesUserId: (userId: number | null) => void
   onDelete: (id: number) => Promise<void>
   onUpdate: (
     id: number,
@@ -18,13 +23,22 @@ interface CreateUsersTableColumnsOptions {
       password: string
     },
   ) => Promise<void>
+  onAssign: (userId: number, roleId: number) => Promise<void>
+  onRemove: (userId: number, roleId: number) => Promise<void>
+  roles: Role[]
 }
 
 export function createUsersTableColumns({
   isDeletePending,
   isUpdatePending,
+  isAssignPending,
+  isRemovePending,
+  setOpenRolesUserId,
   onDelete,
   onUpdate,
+  onAssign,
+  onRemove,
+  roles,
 }: CreateUsersTableColumnsOptions): Array<ColumnDef<UserTableRow>> {
   return [
     {
@@ -99,6 +113,19 @@ export function createUsersTableColumns({
 
         return (
           <div className="flex items-center justify-end gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={!id || isAssignPending || isRemovePending}
+              onClick={() => {
+                if (!id) {
+                  return
+                }
+                setOpenRolesUserId(id)
+              }}
+            >
+              Роли
+            </Button>
             <UsersUpdateDialogButton
               user={row.original}
               isPending={isUpdatePending}
